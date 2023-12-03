@@ -26,12 +26,12 @@ class User implements Serializable {
         return this.name;
     }
 
-    public String getStaffCode()
+    public String getStaffcode()
     {
         return this.staffCode;
     }
 
-    public String getPassWord()
+    public String getPwd()
     {
         return this.passWord;
     }
@@ -46,14 +46,19 @@ class User implements Serializable {
         this.name = name;
     }
     
-    public void setStaffCode(String staffCode)
+    public void setStaffcode(String staffCode)
     {
         this.staffCode = staffCode;
     }
     
-    public void setPassWord(String passWord)
+    public void setPassword(String passWord)
     {
         this.passWord = passWord;
+    }
+
+    public String getPassword(String passWord)
+    {
+        return this.passWord;
     }
     
 }

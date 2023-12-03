@@ -20,7 +20,7 @@ class BusinessOwner extends User implements Serializable {
 
     public void addSalesStaff(String name, String staffCode, String passWord)
     {   //if none of the user share the same staffCode then allow add user using this staffCode
-        if(!store.findUserByStaffCode(staffCode))
+        if(!store.findUserByStaffcode(staffCode))
         {
             SalesStaff newSalesStaff = new SalesStaff(name, staffCode, passWord);
             store.addUser(newSalesStaff);
@@ -30,7 +30,7 @@ class BusinessOwner extends User implements Serializable {
 
     public void addInventoryManager(String name, String staffCode, String passWord)
     {   //if none of the user share the same staffCode then allow add user using this staffCode
-        if(!store.findUserByStaffCode(staffCode))
+        if(!store.findUserByStaffcode(staffCode))
         {
             SalesStaff newInventoryManager = new SalesStaff(name, staffCode, passWord);
             store.addUser(newInventoryManager);

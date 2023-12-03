@@ -55,7 +55,7 @@ class Store implements Serializable {
                 return "User with staffNode " + staffCode + " deleted successfully."; // Exit the method once the user is deleted
             }
         }
-        System.out.println("User with staffNode " + staffCode + " not found.");
+        return "User with staffNode " + staffCode + " not found.";
     }
 
     public Boolean findUserByStaffcode(String staffCode){
