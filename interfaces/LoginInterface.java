@@ -25,8 +25,8 @@ public class LoginInterface {
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         // Create components
-        JLabel userLabel = new JLabel("Username or Staff Code:");
-        JLabel passwordLabel = new JLabel("Password:");
+        JLabel userLabel = new JLabel("Username or Staff Code");
+        JLabel passwordLabel = new JLabel("Password");
 
         userInputField = new JTextField();
         passwordField = new JPasswordField();
@@ -88,12 +88,11 @@ public class LoginInterface {
     }
 
     private void openNextInterface() {
-        // Add code to switch to the next interface upon successful login
-        // For simplicity, let's just close the current frame in this example
+        
         frame.dispose();
 
         // Create and show the next interface (you can replace this with your actual next interface)
-        new NextInterface(store);
+        // new NextInterface(store);
     }
 
     public static void main(String[] args) {

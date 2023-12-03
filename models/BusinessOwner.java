@@ -23,7 +23,7 @@ public class BusinessOwner extends User implements Serializable {
     {   //if none of the user share the same staffCode then allow add user using this staffCode
         if(!store.findUserByStaffcode(staffCode))
         {
-            SalesStaff newSalesStaff = new SalesStaff(name, staffCode, passWord);
+            SalesStaff newSalesStaff = new SalesStaff(name, staffCode, store, passWord);
             store.addUser(newSalesStaff);
         }
 
@@ -33,7 +33,7 @@ public class BusinessOwner extends User implements Serializable {
     {   //if none of the user share the same staffCode then allow add user using this staffCode
         if(!store.findUserByStaffcode(staffCode))
         {
-            SalesStaff newInventoryManager = new SalesStaff(name, staffCode, passWord);
+            SalesStaff newInventoryManager = new SalesStaff(name, staffCode, store, passWord);
             store.addUser(newInventoryManager);
         }
     }
