@@ -6,10 +6,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 class BusinessOwner extends User implements Serializable {
-
-    public BusinessOwner(String name, String staffCode, String passWord) {
+    Store store;
+    public BusinessOwner(String name, String staffCode, String passWord, Store store) {
         // Automatically setting the type to "BusinessOwner"
         super(name, staffCode, passWord, "BusinessOwner");
+        this.store = store;
     }
 
     public void addNewMerchandise(String name, double unitCost, int unitPrice, int stockLevel) {
