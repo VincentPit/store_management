@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-class BusinessOwner extends User implements Serializable {
+public class BusinessOwner extends User implements Serializable {
     Store store;
     public BusinessOwner(String name, String staffCode, String passWord, Store store) {
         // Automatically setting the type to "BusinessOwner"

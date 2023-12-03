@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-class Transaction implements Serializable {
+public class Transaction implements Serializable {
     private long time;
     private double amount;
     private Merchandise merchandise;

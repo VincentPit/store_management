@@ -6,7 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-class User implements Serializable {
+public class User implements Serializable {
     private String name;
     private String staffCode;
     private String passWord;

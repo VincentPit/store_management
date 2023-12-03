@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-class Store implements Serializable {
+public class Store implements Serializable {
     private List<User> users;
     private List<Transaction> transactions;
     private List<Merchandise> merchandiseList;
@@ -126,6 +126,11 @@ class Store implements Serializable {
     public List<Merchandise> viewAllMerchandise(){
 
         return this.merchandiseList;
+    }
+
+    public List<User> viewAllUser(){
+
+        return this.users;
     }
 
     public void updateTransactions(Transaction transaction) {

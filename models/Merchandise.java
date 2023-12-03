@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-class Merchandise implements Serializable {
+public class Merchandise implements Serializable {
     private String name;
     private double unitCost;
     private double unitPrice;

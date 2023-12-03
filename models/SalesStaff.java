@@ -5,11 +5,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-class SalesStaff extends User implements Serializable {
+public class SalesStaff extends User implements Serializable {
 
-    public SalesStaff(String name, String staffCode, String passWord) {
+    public SalesStaff(String name, String staffCode,Store store, String passWord) {
         // Automatically setting the type to "BusinessOwner"
-        super(name, staffCode, passWord, "SalesStaff");
+        super(name, staffCode, passWord, store, "SalesStaff");
     }
 
     public void recordSales(int quantity, String name) {
