@@ -7,11 +7,12 @@ import java.util.Map;
 
 class SalesStaff extends User implements Serializable {
 
-    public SalesStaff(String name, String staffCode) {
-        super(name, staffCode);
+    public SalesStaff(String name, String staffCode, String passWord) {
+        // Automatically setting the type to "BusinessOwner"
+        super(name, staffCode, passWord, "SalesStaff");
     }
 
-    public void recordSales(int quantity, String merchandise) {
+    public void recordSales(int quantity, String name) {
     }
 
     public void searchSale(String inventory) {
