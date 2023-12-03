@@ -18,5 +18,39 @@ class Merchandise implements Serializable {
         this.stockLevel = stockLevel;
     }
 
+    public void setPrice(double price){
+        this.unitPrice = price;
+
+    }
+
+    public String getName(){
+        return this.name;
+
+    }
+
+    public double getUnitPrice(){
+        return this.unitPrice;
+    }
+
+    public double getUnitCost(){
+        return this.unitCost; 
+    }
+
+    public int getStockLevel(){
+        return this.stockLevel;
+    }
+
+    public void setStockLevel(int stock){
+        this.stockLevel = stock;
+    }
+
+    public void setUnitCost(double cost){
+        this.unitCost = cost;
+    }
+
+    public void increaseStock(double unitCost, int amount){
+
+    }
+
     // Getters for name, unitCost, and unitPrice
 }

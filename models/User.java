@@ -13,12 +13,22 @@ class User implements Serializable {
 
     //three type: SalesStaff,BusinessOwner, InventoryManager
     private String type;
+    public Store store;
 
-    public User(String name, String staffCode, String passWord, String type) {
+    public User(){
+        this.name = null;
+        this.staffCode = null;
+        this.passWord = null;
+        this.type = null;
+    }
+
+    public User(String name, String staffCode, String passWord, Store store,String type) {
         this.name = name;
         this.staffCode = staffCode;
         this.passWord = passWord;
         this.type = type;
+        this.store = store;
+
     }
 
     public String getName()
@@ -56,7 +66,7 @@ class User implements Serializable {
         this.passWord = passWord;
     }
 
-    public String getPassword(String passWord)
+    public String getPassword()
     {
         return this.passWord;
     }

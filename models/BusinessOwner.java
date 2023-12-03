@@ -9,13 +9,14 @@ class BusinessOwner extends User implements Serializable {
     Store store;
     public BusinessOwner(String name, String staffCode, String passWord, Store store) {
         // Automatically setting the type to "BusinessOwner"
-        super(name, staffCode, passWord, "BusinessOwner");
+        super(name, staffCode, passWord,store, "BusinessOwner");
         this.store = store;
     }
 
     public void addNewMerchandise(String name, double unitCost, int unitPrice, int stockLevel) {
         Merchandise newMerchandise = new Merchandise(name, unitCost, unitPrice, stockLevel);
-        store.addMerchandise(newMerchandise);
+        store.addNewMerchandise(newMerchandise);
+
     }
 
     public void addSalesStaff(String name, String staffCode, String passWord)
@@ -45,14 +46,14 @@ class BusinessOwner extends User implements Serializable {
     //discount is percentage in double
     public void setDiscount(String name, double discount) {
         //this check if Merchandise exist in store, if yes then set new discount price
-        if(store.findMerchandise(name))
+        if(store.findMerchandise(name) != null)
         {
             store.setDiscount(name, discount);
         }
     }
 
     public void setPrice(String name, double price) {
-        if(store.findMerchandise(name))
+        if(store.findMerchandise(name) != null)
         {
             store.setPrice(name, price);
         }

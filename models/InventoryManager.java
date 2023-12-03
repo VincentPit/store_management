@@ -5,9 +5,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 public class InventoryManager extends User implements Serializable{
-    public InventoryManager(String name, String staffCode, String passWord) {
+    public InventoryManager(String name, String staffCode, String passWord,Store store) {
         // Automatically setting the type to "BusinessOwner"
-        super(name, staffCode, passWord, "InventoryManager");
+        super(name, staffCode, passWord, store,"InventoryManager");
     }
 
     //buyProduct update stockLevel and unitCost, the new purchase price could be different
@@ -26,6 +26,6 @@ public class InventoryManager extends User implements Serializable{
 
     //get the list with all Merchandise
     public void viewAll() {
-        List<Merchandise> tempMerchandiseList = viewAllMerchandise();
+        List<Merchandise> tempMerchandiseList = store.viewAllMerchandise();
     }
 }

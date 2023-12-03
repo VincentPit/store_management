@@ -68,7 +68,7 @@ class Store implements Serializable {
     }
 
     public User loginByName(String name, String pwd){
-        User empt = new User(null,null);
+        User empt = new User();
         for (User user : users) {
             if (user.getName().equals(name)) {
                 // Assuming User class has a getPassword() method
@@ -85,7 +85,7 @@ class Store implements Serializable {
     }
     
     public User loginByStaffcode(String staffCode , String pwd){
-        User empt = new User(null,null);
+        User empt = new User();
         for (User user : users) {
             if (user.getStaffcode().equals(staffCode)) {
                 // Assuming User class has a getPassword() method
@@ -102,22 +102,30 @@ class Store implements Serializable {
     }
     
     
-    public void setPrice(string name, double price){
+    public void setPrice(String name, double price){
         Merchandise merchandise = this.findMerchandise(name);
         if (merchandise.getName() == name){
             merchandise.setPrice(price);
         }
     }
 
+    public void addNewMerchandise(Merchandise m){
+        merchandiseList.add(m);
+    }
+
+
     public void setDiscount(String name, double rate){
         for (Merchandise merchandise : merchandiseList) {
             if (merchandise.getName().equals(name)) {
                 // Merchandise found, add unit cost and quantity to the result map
-                merchandise.setPrice(rate * merchandise.getPrice());
+                merchandise.setPrice(rate * merchandise.getUnitPrice());
             }
         }
+    }
 
+    public List<Merchandise> viewAllMerchandise(){
 
+        return this.merchandiseList;
     }
 
     public void updateTransactions(Transaction transaction) {
