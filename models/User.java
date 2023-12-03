@@ -40,5 +40,20 @@ class User implements Serializable {
     {
         return this.type;
     }
-
+    
+    public void setName(String name)
+    {
+        this.name = name;
+    }
+    
+    public void setStaffCode(String staffCode)
+    {
+        this.staffCode = staffCode;
+    }
+    
+    public void setPassWord(String passWord)
+    {
+        this.passWord = passWord;
+    }
+    
 }
