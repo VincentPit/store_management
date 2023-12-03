@@ -41,8 +41,20 @@ class BusinessOwner extends User implements Serializable {
         store.deleteUser(staffCode);
     }
 
-    public void setDiscount(String name, double price) {
-        store.setPrice(name, price);
+    //discount is percentage in double
+    public void setDiscount(String name, double discount) {
+        //this check if Merchandise exist in store, if yes then set new discount price
+        if(store.findMerchandise(name))
+        {
+            store.setDiscount(name, discount);
+        }
     }
-    
+
+    public void setPrice(String name, double price) {
+        if(store.findMerchandise(name))
+        {
+            store.setPrice(name, price);
+        }
+    }
+
 }
