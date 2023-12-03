@@ -103,14 +103,6 @@ class Store implements Serializable {
     
     
     public void setPrice(string name, double price){
-
-        for (Merchandise merchandise : merchandiseList) {
-            if (merchandise.getName().equals(name)) {
-                // Merchandise found, add unit cost and quantity to the result map
-                return merchandise;
-            }
-        }
-
         Merchandise merchandise = this.findMerchandise(name);
         if (merchandise.getName() == name){
             merchandise.setPrice(price);
