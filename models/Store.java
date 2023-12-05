@@ -1,10 +1,7 @@
 package models;
 import models.*;
 import java.io.*;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 public class Store implements Serializable {
     private List<User> users;
     private List<Transaction> transactions;
@@ -29,7 +26,7 @@ public class Store implements Serializable {
         return false; // User not found
     }
 
-
+    //Angel: 我感觉不需要，而且就正常contains了就行
     public Merchandise findMerchandise(String name) {
         Map<String, Integer> result = new HashMap<>();
     
@@ -45,11 +42,31 @@ public class Store implements Serializable {
         return null;
     }
 
+    public void addNewMerchandise(String name, double unitCost, int unitPrice, int stockLevel) {
+        Merchandise m = new Merchandise(name, unitCost, unitPrice, stockLevel);
+        merchandiseList.add(m);
+        saveMerchandiseList();
+    }
+
+    public void deleteMerchandise(String merchandiseName) {
+        Merchandise toRemove = null;
+        for (Merchandise m : merchandiseList) {
+            if (m.getName().equals(merchandiseName)) {
+                toRemove = m;
+                break;
+            }
+        }
+        if (toRemove != null) {
+            merchandiseList.remove(toRemove);
+        }
+        saveMerchandiseList();
+    }
+
 
     public String deleteUser(String staffCode){
         for (User user : users) {
             // Check if the current user has the specified staffNode
-            if (user.getStaffcode().equals(staffCode)) {
+            if (user.getStaffCode().equals(staffCode)) {
                 // Remove the user from the ArrayList
                 users.remove(user);
                 return "User with staffNode " + staffCode + " deleted successfully."; // Exit the method once the user is deleted
@@ -58,9 +75,9 @@ public class Store implements Serializable {
         return "User with staffNode " + staffCode + " not found.";
     }
 
-    public Boolean findUserByStaffcode(String staffCode){
+    public Boolean findUserByStaffCode(String staffCode){
         for (User user : users) {
-            if (user.getStaffcode().equals(staffCode)) {
+            if (user.getStaffCode().equals(staffCode)) {
                 return true; // User found
             }
         }
@@ -72,7 +89,7 @@ public class Store implements Serializable {
         for (User user : users) {
             if (user.getName().equals(name)) {
                 // Assuming User class has a getPassword() method
-                if (user.getPassword().equals(pwd)) {
+                if (user.getPwd().equals(pwd)) {
                     return user; // Successful login
                 } else {
                     empt.setName("Incorrect password");
@@ -84,12 +101,12 @@ public class Store implements Serializable {
         return empt; 
     }
     
-    public User loginByStaffcode(String staffCode , String pwd){
+    public User loginByStaffCode(String staffCode , String pwd){
         User empt = new User();
         for (User user : users) {
-            if (user.getStaffcode().equals(staffCode)) {
+            if (user.getStaffCode().equals(staffCode)) {
                 // Assuming User class has a getPassword() method
-                if (user.getPassword().equals(pwd)) {
+                if (user.getPwd().equals(pwd)) {
                     return user; // Successful login
                 } else {
                     empt.setName("Incorrect password");
@@ -109,9 +126,7 @@ public class Store implements Serializable {
         }
     }
 
-    public void addNewMerchandise(Merchandise m){
-        merchandiseList.add(m);
-    }
+
 
 
     public void setDiscount(String name, double rate){
@@ -123,12 +138,12 @@ public class Store implements Serializable {
         }
     }
 
-    public List<Merchandise> viewAllMerchandise(){
-
+    public List<Merchandise> getMerchandiseList(){
+        loadMerchandiseList();
         return this.merchandiseList;
     }
 
-    public List<User> viewAllUser(){
+    public List<User> getUserList(){
 
         return this.users;
     }
@@ -137,5 +152,23 @@ public class Store implements Serializable {
         this.transactions.add(transaction);
     }
 
-    
+    public void saveMerchandiseList() {
+        try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream("merchandiseList.ser"))) {
+            oos.writeObject(this.getMerchandiseList());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void loadMerchandiseList() {
+        try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream("merchandiseList.ser"))) {
+            List<Merchandise> loadedList = (List<Merchandise>) ois.readObject();
+            merchandiseList = loadedList;
+        } catch (IOException | ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+    }
+
+
+
 }

@@ -1,14 +1,12 @@
 package models;
 import java.io.*;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 public class Merchandise implements Serializable {
     private String name;
     private double unitCost;
     private double unitPrice;
     private int stockLevel;
+
     
 
     public Merchandise(String name, double unitCost, double unitPrice, int stockLevel ) {
@@ -52,5 +50,4 @@ public class Merchandise implements Serializable {
 
     }
 
-    // Getters for name, unitCost, and unitPrice
 }

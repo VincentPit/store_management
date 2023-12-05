@@ -1,9 +1,6 @@
 package models;
 import java.io.*;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 public class InventoryManager extends User implements Serializable{
     public InventoryManager(String name, String staffCode, String passWord,Store store) {
         // Automatically setting the type to "BusinessOwner"
@@ -26,6 +23,6 @@ public class InventoryManager extends User implements Serializable{
 
     //get the list with all Merchandise
     public void viewAll() {
-        List<Merchandise> tempMerchandiseList = store.viewAllMerchandise();
+        List<Merchandise> tempMerchandiseList = store.getMerchandiseList();
     }
 }

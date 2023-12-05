@@ -1,10 +1,7 @@
 package models;
 import java.io.*;
 import models.*;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 public class BusinessOwner extends User implements Serializable {
     Store store;
     public BusinessOwner(String name, String staffCode, String passWord, Store store) {
@@ -13,15 +10,11 @@ public class BusinessOwner extends User implements Serializable {
         this.store = store;
     }
 
-    public void addNewMerchandise(String name, double unitCost, int unitPrice, int stockLevel) {
-        Merchandise newMerchandise = new Merchandise(name, unitCost, unitPrice, stockLevel);
-        store.addNewMerchandise(newMerchandise);
 
-    }
 
     public void addSalesStaff(String name, String staffCode, String passWord)
     {   //if none of the user share the same staffCode then allow add user using this staffCode
-        if(!store.findUserByStaffcode(staffCode))
+        if(!store.findUserByStaffCode(staffCode))
         {
             SalesStaff newSalesStaff = new SalesStaff(name, staffCode, store, passWord);
             store.addUser(newSalesStaff);
@@ -31,7 +24,7 @@ public class BusinessOwner extends User implements Serializable {
 
     public void addInventoryManager(String name, String staffCode, String passWord)
     {   //if none of the user share the same staffCode then allow add user using this staffCode
-        if(!store.findUserByStaffcode(staffCode))
+        if(!store.findUserByStaffCode(staffCode))
         {
             SalesStaff newInventoryManager = new SalesStaff(name, staffCode, store, passWord);
             store.addUser(newInventoryManager);
@@ -57,6 +50,10 @@ public class BusinessOwner extends User implements Serializable {
         {
             store.setPrice(name, price);
         }
+    }
+
+    public Store getStore(){
+        return this.store;
     }
 
 }

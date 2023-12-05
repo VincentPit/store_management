@@ -1,10 +1,7 @@
 package models;
 import models.*;
 import java.io.*;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class User implements Serializable {
     private String name;
@@ -16,10 +13,10 @@ public class User implements Serializable {
     public Store store;
 
     public User(){
-        this.name = null;
-        this.staffCode = null;
-        this.passWord = null;
-        this.type = null;
+//        this.name = null;
+//        this.staffCode = null;
+//        this.passWord = null;
+//        this.type = null;
     }
 
     public User(String name, String staffCode, String passWord, Store store,String type) {
@@ -36,7 +33,7 @@ public class User implements Serializable {
         return this.name;
     }
 
-    public String getStaffcode()
+    public String getStaffCode()
     {
         return this.staffCode;
     }
@@ -56,19 +53,16 @@ public class User implements Serializable {
         this.name = name;
     }
     
-    public void setStaffcode(String staffCode)
+    public void setStaffCode(String staffCode)
     {
         this.staffCode = staffCode;
     }
     
-    public void setPassword(String passWord)
+    public void setPwd(String passWord)
     {
         this.passWord = passWord;
     }
 
-    public String getPassword()
-    {
-        return this.passWord;
-    }
+
     
 }
