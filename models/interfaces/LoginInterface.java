@@ -122,8 +122,6 @@ public class LoginInterface {
         Store store = new Store();// modify
 
 //        store.addUser(new User("admin", "adminStaffCode", "password",store,null));
-        store.addUser(new BusinessOwner("Angel", "123", "123",store));
-
         // Create the login interface
         SwingUtilities.invokeLater(new Runnable() {
             @Override

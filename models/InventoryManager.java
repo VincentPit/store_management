@@ -1,10 +1,12 @@
 package models;
 import java.io.*;
 import java.util.*;
+import java.time.*;
 public class InventoryManager extends User implements Serializable{
-    public InventoryManager(String name, String staffCode, String passWord,Store store) {
+    public InventoryManager(String name, String staffCode, String passWord,Store store, LocalDate date) {
         // Automatically setting the type to "BusinessOwner"
-        super(name, staffCode, passWord, store,"InventoryManager");
+        super(name, staffCode, passWord, store,"InventoryManager", date);
+        this.setSalary(5000);
     }
 
     //buyProduct update stockLevel and unitCost, the new purchase price could be different
@@ -18,6 +20,11 @@ public class InventoryManager extends User implements Serializable{
         double newCost = ((unitCost * quantity) + (tempCost * tempStockLevel))/newStockLevel;
         tempMerchandise.setStockLevel(newStockLevel);
         tempMerchandise.setUnitCost(newCost);
+
+    }
+
+    public void restock(String merchandiseName, int additionalStock){
+        this.restock(merchandiseName, additionalStock);
 
     }
 

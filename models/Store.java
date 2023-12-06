@@ -8,7 +8,10 @@ public class Store implements Serializable {
     private List<Merchandise> merchandiseList;
 
     public Store() {
+
         this.users = new ArrayList<User>();
+        BusinessOwner owner = new BusinessOwner("Angel", "123", "123", this, null);
+        this.users.add(owner);
         this.transactions = new ArrayList<Transaction>();
         this.merchandiseList = new ArrayList<Merchandise>();
     }
@@ -126,6 +129,17 @@ public class Store implements Serializable {
         }
     }
 
+    public void restock(String merchandiseName, int additionalStock) {
+        for (Merchandise m : merchandiseList) {
+            if (m.getName().equals(merchandiseName)) {
+                int currentStock = m.getStockLevel();
+                m.setStockLevel(currentStock + additionalStock);
+                saveMerchandiseList();
+                return; // Exit the function once the merchandise is found and restocked
+            }
+        }
+        System.out.println("Merchandise not found: " + merchandiseName);
+    }
 
 
 
