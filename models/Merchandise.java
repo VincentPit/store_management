@@ -46,8 +46,12 @@ public class Merchandise implements Serializable {
         this.unitCost = cost;
     }
 
-    public void increaseStock(double unitCost, int amount){
+    public void increaseStock( int amount){
+        this.stockLevel += amount;
+    }
 
+    public void reduceStock( int amount){
+        this.stockLevel -= amount;
     }
 
 }

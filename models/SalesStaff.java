@@ -13,16 +13,29 @@ public class SalesStaff extends User implements Serializable {
 
     public void recordSales(int quantity, Merchandise merchandise) {
         LocalTime time = LocalTime.now();
-
-        Transaction transaction = new Transaction(time, quantity, merchandise);
+        LocalDate date = LocalDate.now();
+        Transaction transaction = new Transaction(time, quantity, merchandise, date);
         this.store.updateTransactions(transaction);
     }
 
-    public void searchSaleHistory(String inventory) {
-        List<Transaction> transactions = this.store.;
-
-
+    public List<Transaction> getAllTransactions(){
+        return this.store.getAllTransactions();
     }
+
+    public List<Transaction> searchSaleHistoryByDate(LocalDate date) {
+        return this.store.searchTransactionsByDate(date);
+
+        }
+
+    public List<Transaction> searchSaleHistoryByTime(LocalTime time) {
+        return this.store.searchTransactionsByTime(time);
+
+        }
+    
+    public List<Transaction> searchSaleHistoryByMerchandise(String m) {
+        return this.store.searchTransactionsByMerchandise(m);
+
+        }
 
 }
 

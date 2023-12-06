@@ -52,6 +52,11 @@ public class User implements Serializable {
     {
         return this.type;
     }
+
+    public LocalDate getDate(){
+
+        return this.dateOfEnrolment;
+    }
     
     public void setName(String name)
     {

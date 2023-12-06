@@ -1,6 +1,8 @@
 package models;
 import models.*;
 import java.io.*;
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.*;
 public class Store implements Serializable {
     private List<User> users;
@@ -39,8 +41,6 @@ public class Store implements Serializable {
                 return merchandise;
             }
         }
-
-
         // Merchandise not found, return an empty map
         return null;
     }
@@ -166,6 +166,10 @@ public class Store implements Serializable {
         this.transactions.add(transaction);
     }
 
+    public List<Transaction> getAllTransactions(){
+        return this.transactions;
+    }
+
     public void saveMerchandiseList() {
         try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream("merchandiseList.ser"))) {
             oos.writeObject(this.getMerchandiseList());
@@ -173,6 +177,7 @@ public class Store implements Serializable {
             e.printStackTrace();
         }
     }
+
 
     public void loadMerchandiseList() {
         try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream("merchandiseList.ser"))) {
@@ -183,6 +188,38 @@ public class Store implements Serializable {
         }
     }
 
+    // Search transactions by merchandise name
+    public List<Transaction> searchTransactionsByMerchandise(String merchandiseName) {
+        List<Transaction> result = new ArrayList<>();
+        for (Transaction transaction : transactions) {
+            if (transaction.getMerchandise().getName().equals(merchandiseName)) {
+                result.add(transaction);
+            }
+        }
+        return result;
+    }
+
+    // Search transactions by time
+    public List<Transaction> searchTransactionsByTime(LocalTime searchTime) {
+        List<Transaction> result = new ArrayList<>();
+        for (Transaction transaction : transactions) {
+            if (transaction.getTime().equals(searchTime)) {
+                result.add(transaction);
+            }
+        }
+        return result;
+    }
+
+    // Search transactions by date
+    public List<Transaction> searchTransactionsByDate(LocalDate searchDate) {
+        List<Transaction> result = new ArrayList<>();
+        for (Transaction transaction : transactions) {
+            if (transaction.getDate().equals(searchDate)) {
+                result.add(transaction);
+            }
+        }
+        return result;
+    }
 
 
 }

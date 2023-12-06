@@ -19,6 +19,8 @@ public class OwnerGUI {
         this.businessOwner = businessOwner;
         createAndShowGUI();
     }
+
+
     private void createAndShowGUI() {
         // Create and set up the window
         JFrame frame = new JFrame("Business Owner Dashboard");
@@ -431,17 +433,13 @@ public class OwnerGUI {
         addPersonnelFrame.setVisible(true);
     }
 
-
-
-
-
-
-
     public static void main(String[] args) {
         // Here, you should create an instance of Store and BusinessOwner
         // For example:
         Store store = new Store();
         LocalDate date = LocalDate.now();
+        User user = store.getUserList().get(0);
+        BusinessOwner owner = new BusinessOwner(user.getName(), user.getStaffCode(), user.getPwd(), user.getStore(), user.getDate() );
         
         store.loadMerchandiseList();
         new OwnerGUI(owner);
