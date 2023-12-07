@@ -73,7 +73,11 @@ public class LoginInterface {
                     if (loggedInUser instanceof BusinessOwner) {
                         frame.dispose();
                         new OwnerGUI((BusinessOwner) loggedInUser);
-                    } else {
+                    } else if(loggedInUser instanceof InventoryManager){
+                        frame.dispose();
+                        new InventoryManagerGUI((InventoryManager) loggedInUser);
+                    }
+                    else {
                         // Handle other user types or show a message
                         JOptionPane.showMessageDialog(frame, "You are not authorized to access the Business Owner interface");
                     }

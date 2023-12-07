@@ -50,6 +50,7 @@ public class OwnerGUI {
         JButton deleteStaffButton = new JButton("Delete Staff");
         JButton setDiscountButton = new JButton("Set Discount");
         JButton setPriceButton = new JButton("Set Price");
+        JButton exitButton = new JButton("Exit"); // Exit button
 
         // Adding buttons to the panel
         buttonPanel.add(viewMerchButton, gbc);
@@ -58,6 +59,7 @@ public class OwnerGUI {
         buttonPanel.add(deleteStaffButton, gbc);
         buttonPanel.add(setDiscountButton, gbc);
         buttonPanel.add(setPriceButton, gbc);
+        buttonPanel.add(exitButton, gbc); // Add the exit button
 
         // Adding components to the frame
         frame.add(greetingLabel, BorderLayout.NORTH);
@@ -80,6 +82,15 @@ public class OwnerGUI {
             @Override
             public void actionPerformed(ActionEvent e) {
                 displayPersonnel();
+            }
+        });
+
+        // Action listener for the exit button
+        exitButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                frame.dispose(); // Close the current window
+                new LoginInterface(businessOwner.getStore());
             }
         });
 

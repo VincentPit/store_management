@@ -24,7 +24,7 @@ public class InventoryManager extends User implements Serializable{
     }
 
     public void restock(String merchandiseName, int additionalStock){
-        this.restock(merchandiseName, additionalStock);
+        this.store.restock(merchandiseName, additionalStock);
 
     }
 
