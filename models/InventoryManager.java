@@ -28,6 +28,25 @@ public class InventoryManager extends User implements Serializable{
 
     }
 
+    public List<Transaction> getAllTransactions(){
+        return this.store.getAllTransactions();
+    }
+
+    public List<Transaction> searchSaleHistoryByDate(LocalDate date) {
+        return this.store.searchTransactionsByDate(date);
+
+    }
+
+    public List<Transaction> searchSaleHistoryByTime(LocalTime time) {
+        return this.store.searchTransactionsByTime(time);
+
+    }
+
+    public List<Transaction> searchSaleHistoryByMerchandise(String m) {
+        return this.store.searchTransactionsByMerchandise(m);
+
+    }
+
     //get the list with all Merchandise
     public void viewAll() {
         List<Merchandise> tempMerchandiseList = store.getMerchandiseList();

@@ -12,12 +12,25 @@ public class Store implements Serializable {
     public Store() {
 
         this.users = new ArrayList<User>();
-        BusinessOwner owner = new BusinessOwner("Angel", "123", "123", this, null);
+        BusinessOwner owner = new BusinessOwner("Angel", "123", "123", this, LocalDate.now());
         this.users.add(owner);
-        InventoryManager inventoryManager = new InventoryManager("Aaron","124", "124",this,null);
+        InventoryManager inventoryManager = new InventoryManager("Aaron","124", "124",this,LocalDate.now());
         this.users.add(inventoryManager);
         this.transactions = new ArrayList<Transaction>();
         this.merchandiseList = new ArrayList<Merchandise>();
+
+        //for testing
+        Merchandise m1 = new Merchandise("Laptop", 1000.0, 1200.0, 10);
+        Merchandise m2 = new Merchandise("Phone", 500.0, 600.0, 20);
+        this.merchandiseList.add(m1);
+        this.merchandiseList.add(m2);
+
+        // Add some sample transactions
+        transactions.add(new Transaction(LocalTime.now(), 2, m1, LocalDate.now()));
+        transactions.add(new Transaction(LocalTime.now(), 1, m2, LocalDate.now()));
+        //Delete after testing
+
+
     }
 
     public void addUser(User user) {
