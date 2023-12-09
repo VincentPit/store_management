@@ -350,7 +350,7 @@ public class OwnerGUI {
         // Assuming getPersonnelList() returns a list of Personnel objects
         List<User> personnelList = businessOwner.getUserList();
         for (User p : personnelList) {
-            System.out.println("Adding to table: " + p.getSalary()); // Debugging line
+            //System.out.println("Adding to table: " + p.getSalary());
             model.addRow(new Object[]{p.getName(), p.getSalary(), p.getDateOfEnrolment(), p.getType()});
         }
     }
@@ -434,10 +434,10 @@ public class OwnerGUI {
                 // Create new Personnel object (adjust constructor as needed)
                 User newPersonnel = new User(name, staffCode, password, businessOwner.getStore(), jobType, dateOfEnrolment);
                 newPersonnel.setSalary(salary);
-                System.out.println("Before adding new personnel:");
-                for (User p : businessOwner.getStore().getUserList()) {
-                    System.out.println("Existing Personnel - Name: " + p.getName() + ", Salary: " + p.getSalary());
-                }
+                //System.out.println("Before adding new personnel:");
+//                for (User p : businessOwner.getStore().getUserList()) {
+//                    System.out.println("Existing Personnel - Name: " + p.getName() + ", Salary: " + p.getSalary());
+//                }
 
 
                 // Add to personnel list, save, refresh table, etc.
@@ -488,12 +488,13 @@ public class OwnerGUI {
         }
 
         while (code.length() < 3) {
-            int nextChar = random.nextInt(36); // 26 letters + 10 digits
+            int nextChar = random.nextInt(26); // 26 letters + 10 digits
             if (nextChar < 26) {
                 code.append((char) ('A' + nextChar));
-            } else {
-                code.append(nextChar - 26);
             }
+//            } else {
+//                code.append(nextChar - 26);
+//            }
         }
 
         return code.toString();

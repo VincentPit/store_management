@@ -35,6 +35,7 @@ public class Store implements Serializable {
 
     public void addUser(User user) {
         this.users.add(user);
+        saveUserList();
     }
 
     public Boolean findUserByName(String name){
@@ -173,7 +174,7 @@ public class Store implements Serializable {
     }
 
     public List<User> getUserList(){
-
+        this.loadUserList();
         return this.users;
     }
 
@@ -198,6 +199,25 @@ public class Store implements Serializable {
         try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream("merchandiseList.ser"))) {
             List<Merchandise> loadedList = (List<Merchandise>) ois.readObject();
             merchandiseList = loadedList;
+        } catch (IOException | ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+    }
+
+
+    public void saveUserList() {
+        try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream("userList.ser"))) {
+            oos.writeObject(this.getUserList());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+
+    public void loadUserList() {
+        try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream("userList.ser"))) {
+            List<User> loadedList = (List<User>) ois.readObject();
+            users = loadedList;
         } catch (IOException | ClassNotFoundException e) {
             e.printStackTrace();
         }
