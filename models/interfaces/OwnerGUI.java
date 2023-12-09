@@ -8,6 +8,7 @@ import java.awt.*;
 import java.awt.event.*;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.*;
 
 public class OwnerGUI {
     private BusinessOwner businessOwner;
@@ -325,7 +326,7 @@ public class OwnerGUI {
         personnelFrame.setVisible(true);
 
         // Create "Add" button
-        JButton addPersonnelButton = new JButton("Add Personnel");
+        JButton addPersonnelButton = new JButton("Add");
 
         // Add the button to the panel or frame
         JPanel personnelButtonPanel = new JPanel();
@@ -338,16 +339,18 @@ public class OwnerGUI {
         addPersonnelButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                displayAddPersonnelForm();
+                displayAddPersonnelForm(personnelModel);
             }
         });
     }
 
     private void refreshPersonnelTable(DefaultTableModel model) {
+
         model.setRowCount(0); // Clear existing data
         // Assuming getPersonnelList() returns a list of Personnel objects
         List<User> personnelList = businessOwner.getUserList();
         for (User p : personnelList) {
+            System.out.println("Adding to table: " + p.getSalary()); // Debugging line
             model.addRow(new Object[]{p.getName(), p.getSalary(), p.getDateOfEnrolment(), p.getType()});
         }
     }
@@ -363,96 +366,152 @@ public class OwnerGUI {
         }
     }
 
-    private void displayAddPersonnelForm() {
-        // Create a new frame or dialog for adding new personnel
+    private void displayAddPersonnelForm(DefaultTableModel model) {
         JFrame addPersonnelFrame = new JFrame("Add New Personnel");
-        addPersonnelFrame.setSize(500, 200);
+        addPersonnelFrame.setSize(300, 200);
 
-        // Create form fields (e.g., name, salary, date of enrolment, job type)
-        JPanel formPanel = new JPanel(new GridLayout(0, 2));
-        // Add JTextFields, JLabels, etc., for each field
-
+        // Form fields
+        JPanel formPanel = new JPanel(new GridLayout(0, 2)); // 0 rows, 2 columns for labels and fields
 
         // Name field
         formPanel.add(new JLabel("Name:"));
         JTextField nameField = new JTextField();
         formPanel.add(nameField);
 
-        formPanel.add(new JLabel("Staff Code:"));
-        JTextField codeField = new JTextField();
-        formPanel.add(codeField);
+        // Job Type dropdown
+        formPanel.add(new JLabel("Job Type:"));
+        String[] jobTypes = {"", "SalesStaff", "InventoryManager", "BusinessOwner"};
+        JComboBox<String> jobTypeComboBox = new JComboBox<>(jobTypes);
+        jobTypeComboBox.setSelectedIndex(0); // Set blank item as selected
+        formPanel.add(jobTypeComboBox);
 
-        // Salary field
+        // Salary field (non-editable, auto-filled)
         formPanel.add(new JLabel("Salary:"));
         JTextField salaryField = new JTextField();
+        salaryField.setEditable(true);
         formPanel.add(salaryField);
 
-        // Date of Enrollment field
-        formPanel.add(new JLabel("Date of Enrollment (yyyy-MM-dd):"));
-        JTextField dateOfEnrolmentField = new JTextField();
-        formPanel.add(dateOfEnrolmentField);
+        // Populate salary based on job type selection
+        jobTypeComboBox.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String selectedJobType = (String) jobTypeComboBox.getSelectedItem();
+                //double salary = calculateSalaryForJobType(selectedJobType);
+                //String selectedJobType = (String) jobTypeComboBox.getSelectedItem();
+                if (!selectedJobType.isEmpty()) {
+                    double recommendedSalary = calculateSalaryForJobType(selectedJobType);
+                    salaryField.setText(String.format("%.2f", recommendedSalary)); // Set as a formatted string
+                } else {
+                    salaryField.setText("");
+                }
+                //salaryField.setText(String.valueOf(salary));
+            }
+        });
 
-        // Job Type field
-        formPanel.add(new JLabel("Job Type:"));
-        JTextField jobTypeField = new JTextField();
-        formPanel.add(jobTypeField);
-        // Create a submit button
-        JButton submitButton = new JButton("Submit");
-        // Define action listener for submitButton to handle form submission
-//        submitButton.addActionListener(new ActionListener() {
-//            @Override
-//            public void actionPerformed(ActionEvent e) {
-//                try {
-//                    // Retrieve data from form fields
-//                    String name = nameField.getText();
-//                    String code = codeField.getText();
-//                    double salary = Double.parseDouble(salaryField.getText());
-//                    LocalDate dateOfEnrolment = LocalDate.parse(dateOfEnrolmentField.getText()); // Assuming format is yyyy-MM-dd
-//                    String jobType = jobTypeField.getText(); // Or get from a JComboBox if using dropdown
-//
-//                    // Create new Personnel object
-//                    User newPersonnel = new User(name, code, dateOfEnrolment, jobType);
-//
-//                    // Add object to personnel list
-//                    businessOwner.getStore().addPersonnel(newPersonnel);
-//
-//                    // Save the updated list (if you have implemented persistence)
-//                    businessOwner.getStore().savePersonnelList();
-//
-//                    // Refresh personnel table to show new entry
-//                    refreshPersonnelTable();
-//
-//                    // Close the addPersonnelFrame
-//                    addPersonnelFrame.dispose();
-//
-//                } catch (NumberFormatException ex) {
-//                    JOptionPane.showMessageDialog(addPersonnelFrame, "Please enter valid numbers for salary.");
-//                } catch (DateTimeParseException ex) {
-//                    JOptionPane.showMessageDialog(addPersonnelFrame, "Please enter the date in the format yyyy-MM-dd.");
-//                } catch (Exception ex) {
-//                    JOptionPane.showMessageDialog(addPersonnelFrame, "Error adding personnel: " + ex.getMessage());
-//                }
-//            }
-//        });
+        // Submit button
+        JButton submitButton = new JButton("Add Personnel");
+        // Add ActionListener to submitButton here
+        submitButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String name = nameField.getText();
+                String jobType = (String) jobTypeComboBox.getSelectedItem();
+                double salary;
 
-        // Add components to the frame or dialog
+                try {
+                    salary = Double.parseDouble(salaryField.getText());
+                } catch (NumberFormatException ex) {
+                    JOptionPane.showMessageDialog(addPersonnelFrame, "Invalid salary. Please enter a valid number.");
+                    return;
+                }
+                System.out.println("Salary: " + salary); // Debugging line
+                LocalDate dateOfEnrolment = LocalDate.now();
+
+                // Generate staff code and password
+                String staffCode = generateStaffCode(jobType);
+                String password = staffCode; // Password is same as staff code
+
+                // Create new Personnel object (adjust constructor as needed)
+                User newPersonnel = new User(name, staffCode, password, businessOwner.getStore(), jobType, dateOfEnrolment);
+                newPersonnel.setSalary(salary);
+                System.out.println("Before adding new personnel:");
+                for (User p : businessOwner.getStore().getUserList()) {
+                    System.out.println("Existing Personnel - Name: " + p.getName() + ", Salary: " + p.getSalary());
+                }
+
+
+                // Add to personnel list, save, refresh table, etc.
+                businessOwner.getStore().addUser(newPersonnel);
+                refreshPersonnelTable(model);
+                // ...
+
+                // Display staff code and password
+                JOptionPane.showMessageDialog(addPersonnelFrame,
+                        "Staff Code: " + staffCode + "\nPassword: " + password +
+                                "\n\nPlease share this information with the new personnel.",
+                        "Personnel Details", JOptionPane.INFORMATION_MESSAGE);
+
+                // Close the addPersonnelFrame
+                addPersonnelFrame.dispose();
+            }
+        });
+
+        // Add components to the frame
         addPersonnelFrame.add(formPanel, BorderLayout.CENTER);
         addPersonnelFrame.add(submitButton, BorderLayout.SOUTH);
 
-        // Display the frame or dialog
+        // Display the frame
         addPersonnelFrame.setLocationRelativeTo(null);
         addPersonnelFrame.setVisible(true);
     }
+
+    private double calculateSalaryForJobType(String jobType) {
+        // Placeholder logic: customize as per your application's rules
+        if (jobType.equals("SalesStaff")) {
+            return 1000.0; // Example salary for Sales Staff
+        } else if (jobType.equals("InventoryManager")) {
+            return 5000.0; // Example salary for Inventory Manager
+        }
+        return 10000.0;
+    }
+
+    private String generateStaffCode(String jobType) {
+        StringBuilder code = new StringBuilder();
+        Random random = new Random();
+
+        if ("InventoryManager".equals(jobType)) {
+            code.append("2");
+        } else if ("BusinessOwner".equals(jobType)) {
+            code.append("1");
+        } else if ("SalesStaff".equals(jobType)) {
+            code.append("3");
+        }
+
+        while (code.length() < 3) {
+            int nextChar = random.nextInt(36); // 26 letters + 10 digits
+            if (nextChar < 26) {
+                code.append((char) ('A' + nextChar));
+            } else {
+                code.append(nextChar - 26);
+            }
+        }
+
+        return code.toString();
+    }
+
 
     public static void main(String[] args) {
         // Here, you should create an instance of Store and BusinessOwner
         // For example:
         Store store = new Store();
+
         LocalDate date = LocalDate.now();
         User user = store.getUserList().get(0);
         BusinessOwner owner = new BusinessOwner(user.getName(), user.getStaffCode(), user.getPwd(), user.getStore(), user.getDate() );
-        
+
         store.loadMerchandiseList();
+
+
         new OwnerGUI(owner);
     }
 }
