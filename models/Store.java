@@ -201,8 +201,13 @@ public class Store implements Serializable {
             merchandiseList = loadedList;
         } catch (IOException | ClassNotFoundException e) {
             e.printStackTrace();
+            // If the file is not found, create a new merchandise list
+            merchandiseList = new ArrayList<Merchandise>();
+            
+            saveMerchandiseList(); // Optionally save the new empty list to the file
         }
     }
+    
 
 
     public void saveUserList() {
@@ -220,8 +225,13 @@ public class Store implements Serializable {
             users = loadedList;
         } catch (IOException | ClassNotFoundException e) {
             e.printStackTrace();
+            // If the file is not found, create a new user list
+            users = new ArrayList<>();
+            users.add(new BusinessOwner(Angel, "123", "123", this, null));
+            saveUserList(); // Optionally save the new empty list to the file
         }
     }
+    
 
     // Search transactions by merchandise name
     public List<Transaction> searchTransactionsByMerchandise(String merchandiseName) {
