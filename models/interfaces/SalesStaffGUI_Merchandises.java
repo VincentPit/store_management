@@ -30,11 +30,24 @@ public class SalesStaffGUI_Merchandises {
         merchandiseComboBox = new JComboBox<>();
         quantityTextField = new JTextField();
         JButton sellButton = new JButton("Sell");
+        JButton backButton = new JButton("Back"); // Add a back button
+
 
         sellButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 handleSellButtonClick();
+            }
+        });
+
+        backButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                // Create and show the SalesStaffGUI
+                SwingUtilities.invokeLater(() -> {
+                    frame.dispose(); // Close the current frame
+                    SalesStaffGUI salesStaffGUI = new SalesStaffGUI(salesStaff);
+                });
             }
         });
 
@@ -51,6 +64,8 @@ public class SalesStaffGUI_Merchandises {
         sellPanel.add(quantityTextField);
         
         sellPanel.add(sellButton);
+        sellPanel.add(backButton);
+        
 
         frame.add(sellPanel, BorderLayout.SOUTH);
 
@@ -61,7 +76,9 @@ public class SalesStaffGUI_Merchandises {
     }
 
     private void updateMerchandiseList() {
-        List<Merchandise> merchandiseList = salesStaff.getStore().getMerchandiseList();
+        
+
+        List<Merchandise> merchandiseList = salesStaff.getAllMerchandise();
         merchandiseComboBox.removeAllItems();
         for (Merchandise merchandise : merchandiseList) {
             merchandiseComboBox.addItem(merchandise.getName());
@@ -83,7 +100,7 @@ public class SalesStaffGUI_Merchandises {
             return;
         }
 
-        Merchandise selectedMerchandise = salesStaff.getStore().findMerchandise(merchandiseName);
+        Merchandise selectedMerchandise = salesStaff.findMerchandise(merchandiseName);
 
         if (selectedMerchandise == null) {
             JOptionPane.showMessageDialog(frame, "Selected merchandise not found.");
@@ -105,6 +122,7 @@ public class SalesStaffGUI_Merchandises {
 
         JOptionPane.showMessageDialog(frame, "Sale recorded successfully.");
     }
+
 
     private void refreshMerchandiseTextArea() {
         List<Merchandise> merchandiseList = salesStaff.getStore().getMerchandiseList();

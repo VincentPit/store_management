@@ -13,10 +13,11 @@ public class Transaction implements Serializable {
 
 
     public Transaction(LocalTime time, int q, Merchandise merchandise, LocalDate date) {
-        this.time = time;
+
+        this.time = LocalTime.now();
         this.quantity = q;
         this.merchandise = merchandise;
-        this.date = date;
+        this.date = LocalDate.now();
     }
 
     // Getters for time, amount, and merchandise, date

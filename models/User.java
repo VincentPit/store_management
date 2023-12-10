@@ -30,7 +30,7 @@ public class User implements Serializable {
         this.passWord = passWord;
         this.type = type;
         this.store = store;
-        this.dateOfEnrolment= date;
+        this.dateOfEnrolment= LocalDate.now();
     }
 
     public String getName()

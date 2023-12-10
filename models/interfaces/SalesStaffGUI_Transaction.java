@@ -21,7 +21,7 @@ public class SalesStaffGUI_Transaction {
         this.salesStaff = salesStaff;
 
         frame = new JFrame("SalesStaff Transaction");
-        frame.setSize(800, 600);
+        frame.setSize(1200, 600);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         resultTextArea = new JTextArea();
@@ -37,6 +37,7 @@ public class SalesStaffGUI_Transaction {
         JButton searchByDateButton = new JButton("Search by Date");
         JButton searchByTimeButton = new JButton("Search by Time");
         JButton searchByMerchandiseButton = new JButton("Search by Merchandise");
+        JButton backButton = new JButton("Back"); // Add a back button
 
         searchByDateButton.addActionListener(new ActionListener() {
             @Override
@@ -59,6 +60,19 @@ public class SalesStaffGUI_Transaction {
             }
         });
 
+        backButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                // Create and show the SalesStaffGUI
+                SwingUtilities.invokeLater(() -> {
+                    frame.dispose(); // Close the current frame
+                    SalesStaffGUI salesStaffGUI = new SalesStaffGUI(salesStaff);
+                    
+                });
+            }
+        });
+        
+
         frame.setLayout(new BorderLayout());
         frame.add(scrollPane, BorderLayout.CENTER);
 
@@ -75,6 +89,11 @@ public class SalesStaffGUI_Transaction {
         searchPanel.add(merchandiseTextField);
         searchPanel.add(searchByMerchandiseButton);
 
+        searchPanel.add(new JLabel("Back"));
+
+
+        searchPanel.add(backButton);
+
         frame.add(searchPanel, BorderLayout.SOUTH);
 
         frame.setLocationRelativeTo(null);
@@ -88,7 +107,7 @@ public class SalesStaffGUI_Transaction {
         List<Transaction> allTransactions = salesStaff.getAllTransactions();
     
         // Display attribute names as labels
-        resultTextArea.setText(String.format("%-20s%-20s%-20s%-20s\n", "Time", "Date", "Merchandise", "Quantity"));
+        resultTextArea.setText(String.format("%-25s%-30s%-25s%-30s\n", "Time", "Date", "Merchandise", "Quantity"));
     
         if (!allTransactions.isEmpty()) {
             // Display all transactions
@@ -103,11 +122,13 @@ public class SalesStaffGUI_Transaction {
     
 
     private void displayTransaction(Transaction transaction) {
-        resultTextArea.append("Time: " + transaction.getTime() +
-                ", Date: " + transaction.getDate() +
-                ", Merchandise: " + transaction.getMerchandise().getName() +
-                ", Quantity: " + transaction.getQuantity() + "\n");
+        resultTextArea.append(String.format(" %-25s%-30s%-25s%-30s\n",
+                transaction.getTime(),
+                transaction.getDate(),
+                transaction.getMerchandise().getName(),
+                transaction.getQuantity()));
     }
+    
 
     private void handleSearchByDate() {
         String dateStr = dateTextField.getText();
@@ -140,11 +161,11 @@ public class SalesStaffGUI_Transaction {
         } else {
             // Display attribute names as labels
             Transaction sampleTransaction = result.get(0);
-            resultTextArea.append(String.format("%-20s%-20s%-20s%-20s\n", "Time", "Date", "Merchandise", "Quantity"));
+            resultTextArea.append(String.format("%-25s%-30s%-25s%-30s\n", "Time", "Date", "Merchandise", "Quantity"));
     
             // Display all transactions
             for (Transaction transaction : result) {
-                resultTextArea.append(String.format("%-20s%-20s%-20s%-20s\n",
+                resultTextArea.append(String.format("%-25s%-30s%-25s%-30s\n",
                         transaction.getTime(),
                         transaction.getDate(),
                         transaction.getMerchandise().getName(),
