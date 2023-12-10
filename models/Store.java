@@ -199,14 +199,16 @@ public class Store implements Serializable {
         try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream("merchandiseList.ser"))) {
             List<Merchandise> loadedList = (List<Merchandise>) ois.readObject();
             merchandiseList = loadedList;
-        } catch (IOException | ClassNotFoundException e) {
-            e.printStackTrace();
-            // If the file is not found, create a new merchandise list
+        } catch (FileNotFoundException e) {
+            // File not found, create a new merchandise list
             merchandiseList = new ArrayList<Merchandise>();
-            
             saveMerchandiseList(); // Optionally save the new empty list to the file
+        } catch (IOException | ClassNotFoundException e) {
+            // Handle other exceptions (e.g., IOException, ClassNotFoundException)
+            e.printStackTrace();
         }
     }
+    
     
 
 
@@ -223,12 +225,14 @@ public class Store implements Serializable {
         try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream("userList.ser"))) {
             List<User> loadedList = (List<User>) ois.readObject();
             users = loadedList;
-        } catch (IOException | ClassNotFoundException e) {
-            e.printStackTrace();
-            // If the file is not found, create a new user list
+        } catch (FileNotFoundException e) {
+            // File not found, create a new user list
             users = new ArrayList<>();
-            users.add(new BusinessOwner(Angel, "123", "123", this, null));
+            users.add(new BusinessOwner("Angel", "123", "123", this, null));
             saveUserList(); // Optionally save the new empty list to the file
+        } catch (IOException | ClassNotFoundException e) {
+            // Handle other exceptions (e.g., IOException, ClassNotFoundException)
+            e.printStackTrace();
         }
     }
     

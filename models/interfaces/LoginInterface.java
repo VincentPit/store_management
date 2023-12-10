@@ -81,7 +81,7 @@ public class LoginInterface {
                         new SalesStaffGUI((SalesStaff) loggedInUser);
                     } 
                     else {
-                        JOptionPane.showMessageDialog(frame, "You are not authorized to access the Business Owner interface");
+                        JOptionPane.showMessageDialog(frame, "You are not authorized to access staff interfaces");
                     }
                 } else {
                     JOptionPane.showMessageDialog(frame, "Invalid username or password", "Error", JOptionPane.ERROR_MESSAGE);
