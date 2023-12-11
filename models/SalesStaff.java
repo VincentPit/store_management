@@ -28,6 +28,8 @@ public class SalesStaff extends User implements Serializable {
             };
 
         }
+
+        
         this.store.replaceMerchandiseList(merchandiseList);
 
         List<Merchandise> ml = getAllMerchandise(this.store);
