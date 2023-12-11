@@ -38,7 +38,8 @@ public class Store implements Serializable {
             InventoryManager inventoryManager = new InventoryManager("Aaron","124", "124",this,LocalDate.now());
             this.users.add(inventoryManager);
             SalesStaff salesStaff = new SalesStaff("Stephen", "345", this, "345",  LocalDate.now());
-            this.users.add(owner);
+            this.users.add(salesStaff);
+            System.out.println(users);
             saveUserList(); // Optionally save the new empty list to the file
         } catch (IOException | ClassNotFoundException e) {
             // Handle other exceptions (e.g., IOException, ClassNotFoundException)
@@ -233,7 +234,11 @@ public class Store implements Serializable {
     }
 
     public void updateTransactions(Transaction transaction) {
+        if (transactions == null){
+            this.transactions = new ArrayList<Transaction>();
+        }
         this.transactions.add(transaction);
+        
     }
 
     public List<Transaction> getAllTransactions(){
