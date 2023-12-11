@@ -295,8 +295,15 @@ public class OwnerGUI {
         personnelFrame.setSize(500, 300);
 
         // Table model and table for personnel data
-        String[] columns = {"Name", "Salary", "Date of Enrolment", "Job Type"};
-        DefaultTableModel personnelModel = new DefaultTableModel(columns, 0);
+        String[] columns = {"StaffCode","Name", "Salary", "Date of Enrolment", "Job Type"};
+        //DefaultTableModel personnelModel = new DefaultTableModel(columns, 0);
+        DefaultTableModel personnelModel = new DefaultTableModel(columns, 0) {
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                // This will make all cells in the table non-editable
+                return false;
+            }
+        };
         JTable personnelTable = new JTable(personnelModel);
 
         // Populate the table with personnel data
@@ -327,11 +334,20 @@ public class OwnerGUI {
 
         // Create "Add" button
         JButton addPersonnelButton = new JButton("Add");
+        // Create "Delete" button
+        JButton deletePersonnelButton = new JButton("Delete");
+        JButton editPersonnelButton = new JButton("Edit");
+        JButton searchButton = new JButton("Search");
+
+
 
         // Add the button to the panel or frame
         JPanel personnelButtonPanel = new JPanel();
         personnelButtonPanel.add(addPersonnelButton);
-        // If you have other buttons like delete or search, add them to personnelButtonPanel as well
+        personnelButtonPanel.add(deletePersonnelButton);
+        personnelButtonPanel.add(editPersonnelButton);
+        personnelButtonPanel.add(searchButton);
+
 
         // Add the panel to the frame
         personnelFrame.add(personnelButtonPanel, BorderLayout.SOUTH);
@@ -342,6 +358,62 @@ public class OwnerGUI {
                 displayAddPersonnelForm(personnelModel);
             }
         });
+
+        deletePersonnelButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                int selectedRow = personnelTable.getSelectedRow();
+                if (selectedRow >= 0) {
+                    // Assuming staff code is in the first column
+                    String staffCode = personnelModel.getValueAt(selectedRow, 0).toString();
+
+                    // Confirm before deletion
+                    int confirm = JOptionPane.showConfirmDialog(
+                            personnelFrame,
+                            "Are you sure you want to delete the personnel with staff code " + staffCode + "?",
+                            "Delete Personnel",
+                            JOptionPane.YES_NO_OPTION
+                    );
+
+                    if (confirm == JOptionPane.YES_OPTION) {
+                        // Call the deleteUser method
+                        String resultMessage = businessOwner.getStore().deleteUser(staffCode);
+
+                        // Show result message
+                        JOptionPane.showMessageDialog(personnelFrame, resultMessage);
+
+                        // Remove the personnel from the table model if deletion was successful
+                        if (resultMessage.contains("successfully")) {
+                            personnelModel.removeRow(selectedRow);
+                        }
+                    }
+                } else {
+                    JOptionPane.showMessageDialog(personnelFrame, "Please select a personnel to delete.");
+                }
+            }
+        });
+
+        editPersonnelButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                int selectedRow = personnelTable.getSelectedRow();
+                if (selectedRow >= 0) {
+                    displayEditPersonnelForm(personnelModel, selectedRow);
+                } else {
+                    JOptionPane.showMessageDialog(personnelFrame, "Please select a personnel to edit.");
+                }
+            }
+        });
+
+        searchButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                displaySearchForm(personnelModel, personnelTable);
+            }
+        });
+
+
+
     }
 
     private void refreshPersonnelTable(DefaultTableModel model) {
@@ -351,7 +423,7 @@ public class OwnerGUI {
         List<User> personnelList = businessOwner.getUserList();
         for (User p : personnelList) {
             //System.out.println("Adding to table: " + p.getSalary());
-            model.addRow(new Object[]{p.getName(), p.getSalary(), p.getDateOfEnrolment(), p.getType()});
+            model.addRow(new Object[]{p.getStaffCode(),p.getName(), p.getSalary(), p.getDateOfEnrolment(), p.getType()});
         }
     }
 
@@ -359,7 +431,7 @@ public class OwnerGUI {
         refreshPersonnelTable(model); // Refresh to show all personnel first
         if (!jobType.equals("All")) {
             for (int i = model.getRowCount() - 1; i >= 0; i--) {
-                if (!model.getValueAt(i, 3).equals(jobType)) {
+                if (!model.getValueAt(i, 4).equals(jobType)) {
                     model.removeRow(i); // Remove rows that don't match the filter
                 }
             }
@@ -372,6 +444,7 @@ public class OwnerGUI {
 
         // Form fields
         JPanel formPanel = new JPanel(new GridLayout(0, 2)); // 0 rows, 2 columns for labels and fields
+
 
         // Name field
         formPanel.add(new JLabel("Name:"));
@@ -424,7 +497,7 @@ public class OwnerGUI {
                     JOptionPane.showMessageDialog(addPersonnelFrame, "Invalid salary. Please enter a valid number.");
                     return;
                 }
-                System.out.println("Salary: " + salary); // Debugging line
+                //System.out.println("Salary: " + salary); // Debugging line
                 LocalDate dateOfEnrolment = LocalDate.now();
 
                 // Generate staff code and password
@@ -466,11 +539,10 @@ public class OwnerGUI {
     }
 
     private double calculateSalaryForJobType(String jobType) {
-        // Placeholder logic: customize as per your application's rules
         if (jobType.equals("SalesStaff")) {
-            return 1000.0; // Example salary for Sales Staff
+            return 1000.0;
         } else if (jobType.equals("InventoryManager")) {
-            return 5000.0; // Example salary for Inventory Manager
+            return 5000.0;
         }
         return 10000.0;
     }
@@ -486,33 +558,162 @@ public class OwnerGUI {
         } else if ("SalesStaff".equals(jobType)) {
             code.append("3");
         }
-
-        while (code.length() < 3) {
-            int nextChar = random.nextInt(26); // 26 letters + 10 digits
-            if (nextChar < 26) {
-                code.append((char) ('A' + nextChar));
+        do {
+            while (code.length() < 3) {
+                int nextChar = random.nextInt(26); // 26 letters
+                // note the GUI added user's staff code will have 2 characters followed by 1 digit
+                // the staff code of users added directly in the code will be made of 3 digits
+                if (nextChar < 26) {
+                    code.append((char) ('A' + nextChar));
+                }
             }
-//            } else {
-//                code.append(nextChar - 26);
-//            }
-        }
+        } while(!isStaffCodeUnique(code.toString()));
 
         return code.toString();
     }
 
-
-    public static void main(String[] args) {
-        // Here, you should create an instance of Store and BusinessOwner
-        // For example:
-        Store store = new Store();
-
-        LocalDate date = LocalDate.now();
-        User user = store.getUserList().get(0);
-        BusinessOwner owner = new BusinessOwner(user.getName(), user.getStaffCode(), user.getPwd(), user.getStore(), user.getDate() );
-
-        store.loadMerchandiseList();
-
-
-        new OwnerGUI(owner);
+    private boolean isStaffCodeUnique(String staffCode) {
+        for (User user : businessOwner.getUserList()) {
+            if (user.getStaffCode().equals(staffCode)) {
+                return false;
+            }
+        }
+        return true; // No matching staff code found
     }
+
+    private void displayEditPersonnelForm(DefaultTableModel personnelModel, int selectedRow) {
+        JFrame editFrame = new JFrame("Edit Personnel");
+        editFrame.setSize(300, 200);
+        editFrame.setLayout(new GridLayout(0, 2));
+
+        String currentName = personnelModel.getValueAt(selectedRow, 1).toString();
+        String currentSalary = personnelModel.getValueAt(selectedRow, 2).toString();
+        String currentJobType = personnelModel.getValueAt(selectedRow, 4).toString();
+
+        // Create and populate fields
+        JTextField nameField = new JTextField(currentName);
+        JTextField salaryField = new JTextField(currentSalary);
+        JComboBox<String> jobTypeComboBox = new JComboBox<>(new String[]{"SalesStaff", "InventoryManager", "BusinessOwner"});
+        jobTypeComboBox.setSelectedItem(currentJobType);
+
+        // Add components to edit frame
+        editFrame.add(new JLabel("Name:"));
+        editFrame.add(nameField);
+        editFrame.add(new JLabel("Salary:"));
+        editFrame.add(salaryField);
+        editFrame.add(new JLabel("Job Type:"));
+        editFrame.add(jobTypeComboBox);
+
+        JButton saveButton = new JButton("Save");
+        JButton resetButton = new JButton("Reset");
+        editFrame.add(saveButton);
+        editFrame.add(resetButton);
+
+        saveButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                // Validate and save changes
+                // Update the model and possibly the underlying data
+                personnelModel.setValueAt(nameField.getText(), selectedRow, 1);
+                personnelModel.setValueAt(salaryField.getText(), selectedRow, 2);
+                personnelModel.setValueAt(jobTypeComboBox.getSelectedItem(), selectedRow, 4);
+
+                // Close the edit frame
+                editFrame.dispose();
+
+            }
+        });
+
+        resetButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                nameField.setText(currentName);
+                salaryField.setText(currentSalary);
+                jobTypeComboBox.setSelectedItem(currentJobType);
+            }
+        });
+
+        editFrame.setLocationRelativeTo(null);
+        editFrame.setVisible(true);
+    }
+
+
+    private void displaySearchForm(DefaultTableModel model, JTable table) {
+        JFrame searchFrame = new JFrame("Search Personnel");
+        searchFrame.setLayout(new GridLayout(0, 2));
+        searchFrame.setSize(300, 200);
+
+        // Create input fields for each attribute
+        JTextField codeField = new JTextField();
+        JTextField nameField = new JTextField();
+
+        searchFrame.add(new JLabel("Staff Code:"));
+        searchFrame.add(codeField);
+        searchFrame.add(new JLabel("Name:"));
+        searchFrame.add(nameField);
+
+        JComboBox<String> jobTypeComboBox = new JComboBox<>();
+        jobTypeComboBox.addItem(""); // Blank item
+        jobTypeComboBox.addItem("SalesStaff");
+        jobTypeComboBox.addItem("InventoryManager");
+        jobTypeComboBox.addItem("BusinessOwner");
+        jobTypeComboBox.setSelectedItem(""); // Set blank item as default
+
+        searchFrame.add(new JLabel("Job Type:"));
+        searchFrame.add(jobTypeComboBox);
+
+        JButton doSearchButton = new JButton("Search");
+        searchFrame.add(doSearchButton);
+        JButton resetButton = new JButton("Reset");
+        searchFrame.add(resetButton);
+
+        doSearchButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String jobType = (String) jobTypeComboBox.getSelectedItem();
+                searchAndHighlight(model, table, codeField.getText(), nameField.getText(), jobType);
+                searchFrame.dispose(); // Close the search frame
+            }
+        });
+
+
+        resetButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                nameField.setText("");
+                codeField.setText("");
+                jobTypeComboBox.setSelectedItem("");
+                // Reset other fields as needed
+            }
+        });
+
+        searchFrame.setLocationRelativeTo(null);
+        searchFrame.setVisible(true);
+    }
+
+    private void searchAndHighlight(DefaultTableModel model, JTable table, String staffCode, String name, String jobType) {
+        table.clearSelection();
+
+        for (int i = 0; i < model.getRowCount(); i++) {
+            boolean staffCodeMatch = staffCode.isEmpty() || containsIgnoreCase(model.getValueAt(i, 0).toString(), staffCode);
+            boolean nameMatch = name.isEmpty() || containsIgnoreCase(model.getValueAt(i, 1).toString(), name);
+            boolean jobTypeMatch = jobType.isEmpty() || containsIgnoreCase(model.getValueAt(i, 4).toString(), jobType);
+
+            if (staffCodeMatch && nameMatch && jobTypeMatch) {
+                table.addRowSelectionInterval(i, i);
+            }
+        }
+
+        // Check if any row is selected
+        if (table.getSelectedRowCount() == 0) {
+            JOptionPane.showMessageDialog(table, "No record matches the search result.", "Search Result", JOptionPane.INFORMATION_MESSAGE);
+        }
+    }
+
+
+    private boolean containsIgnoreCase(String src, String what) {
+        return src.toLowerCase().contains(what.toLowerCase());
+    }
+
+
 }

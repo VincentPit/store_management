@@ -95,17 +95,21 @@ public class Store implements Serializable {
     }
 
 
-    public String deleteUser(String staffCode){
-        for (User user : users) {
-            // Check if the current user has the specified staffNode
+    public String deleteUser(String staffCode) {
+        Iterator<User> iterator = users.iterator();
+        while (iterator.hasNext()) {
+            User user = iterator.next();
             if (user.getStaffCode().equals(staffCode)) {
-                // Remove the user from the ArrayList
+                iterator.remove();
+                // Add logic here to save/update the user list to external storage if needed
                 users.remove(user);
-                return "User with staffNode " + staffCode + " deleted successfully."; // Exit the method once the user is deleted
+                this.saveUserList();
+                return "User with staff code " + staffCode + " deleted successfully.";
             }
         }
-        return "User with staffNode " + staffCode + " not found.";
+        return "User with staff code " + staffCode + " not found.";
     }
+
 
     public Boolean findUserByStaffCode(String staffCode){
         for (User user : users) {
