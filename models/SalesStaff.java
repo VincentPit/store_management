@@ -15,7 +15,7 @@ public class SalesStaff extends User implements Serializable {
         LocalTime time = LocalTime.now();
         LocalDate date = LocalDate.now();
         Transaction transaction = new Transaction(time, quantity, merchandise, date);
-        merchandise.
+        merchandise.reduceStock(quantity);
         this.store.updateTransactions(transaction);
     }
 
