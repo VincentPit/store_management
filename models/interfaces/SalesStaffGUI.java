@@ -12,9 +12,11 @@ public class SalesStaffGUI {
 
     private SalesStaff salesStaff;
     private JFrame frame;
+    private Store store; 
 
     public SalesStaffGUI(SalesStaff salesStaff) {
         this.salesStaff = salesStaff;
+        this.store = salesStaff.getStore();
 
         frame = new JFrame("SalesStaff Main Menu");
         frame.setSize(800, 600);
@@ -52,20 +54,13 @@ public class SalesStaffGUI {
     }
 
     private void openSalesStaffTransactionGUI() {
-        Store store = new Store();
-        LocalDate date = LocalDate.now();
-        User user = store.getUserList().get(0);
-        SalesStaff salesStaff = new SalesStaff(user.getName(), user.getStaffCode(), store, user.getPwd(), date);
+
         SwingUtilities.invokeLater(() -> new SalesStaffGUI_Transaction(salesStaff));
 
         frame.dispose();
     }
 
     private void openSalesStaffMerchandiseGUI() {
-        Store store = new Store();
-        LocalDate date = LocalDate.now();
-        User user = store.getUserList().get(0);
-        SalesStaff salesStaff = new SalesStaff(user.getName(), user.getStaffCode(), store, user.getPwd(), date);
 
         SwingUtilities.invokeLater(() -> new SalesStaffGUI_Merchandises(salesStaff));
 
@@ -76,6 +71,8 @@ public class SalesStaffGUI {
         Store store = new Store();
         LocalDate date = LocalDate.now();
         User user = store.getUserList().get(0);
+
+
         SalesStaff salesStaff = new SalesStaff(user.getName(), user.getStaffCode(), store, user.getPwd(), date);
 
         SwingUtilities.invokeLater(() -> new SalesStaffGUI(salesStaff));

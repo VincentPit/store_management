@@ -51,7 +51,10 @@ public class Merchandise implements Serializable {
     }
 
     public void reduceStock( int amount){
-        this.stockLevel -= amount;
+        System.out.println("Stock level before reduction: " + this.stockLevel);
+        this.stockLevel = this.stockLevel - amount;
+        System.out.println("Stock level after reduction: " + this.stockLevel);
+
     }
 
 }

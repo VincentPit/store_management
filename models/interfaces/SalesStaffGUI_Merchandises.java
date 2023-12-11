@@ -70,18 +70,29 @@ public class SalesStaffGUI_Merchandises {
         frame.add(sellPanel, BorderLayout.SOUTH);
 
         updateMerchandiseList();
-        refreshMerchandiseTextArea();
+        refreshMerchandiseTextArea(salesStaff);
         frame.setLocationRelativeTo(null);
         frame.setVisible(true);
     }
 
     private void updateMerchandiseList() {
-        
-
-        List<Merchandise> merchandiseList = salesStaff.getAllMerchandise();
+        List<Merchandise> merchandiseList = salesStaff.getAllMerchandise(salesStaff.getStore());
         merchandiseComboBox.removeAllItems();
         for (Merchandise merchandise : merchandiseList) {
             merchandiseComboBox.addItem(merchandise.getName());
+        }
+    }
+
+    private void printMerchandiseList() {
+        List<Merchandise> merchandiseList = salesStaff.getAllMerchandise(salesStaff.getStore());
+        
+        // Print header
+        System.out.printf("%-20s%-20s%-20s%-20s\n", "Merchandise", "Stock Level", "Unit Price", "Unit Cost");
+    
+        // Print each merchandise item
+        for (Merchandise merchandise : merchandiseList) {
+            System.out.printf("%-20s%-20d%-20.2f%-20.2f\n",
+                    merchandise.getName(), merchandise.getStockLevel(), merchandise.getUnitPrice(), merchandise.getUnitCost());
         }
     }
 
@@ -114,18 +125,21 @@ public class SalesStaffGUI_Merchandises {
 
         // Record the sale and update stock level
         salesStaff.recordSales(quantitySold, selectedMerchandise);
-        selectedMerchandise.reduceStock(quantitySold);
+        //selectedMerchandise.reduceStock(quantitySold);
+
+        printMerchandiseList();
 
         // Refresh UI
+
         updateMerchandiseList();
-        refreshMerchandiseTextArea();
+        refreshMerchandiseTextArea(salesStaff);
 
         JOptionPane.showMessageDialog(frame, "Sale recorded successfully.");
     }
 
 
-    private void refreshMerchandiseTextArea() {
-        List<Merchandise> merchandiseList = salesStaff.getStore().getMerchandiseList();
+    private void refreshMerchandiseTextArea(SalesStaff salesStaff) {
+        List<Merchandise> merchandiseList = salesStaff.getAllMerchandise(salesStaff.getStore());
         StringBuilder sb = new StringBuilder();
         sb.append(String.format("%-20s%-20s%-20s%-20s\n", "Merchandise", "Stock Level", "Unit Price", "Unit Cost"));
         for (Merchandise merchandise : merchandiseList) {

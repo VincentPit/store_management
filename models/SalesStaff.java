@@ -15,7 +15,31 @@ public class SalesStaff extends User implements Serializable {
         LocalTime time = LocalTime.now();
         LocalDate date = LocalDate.now();
         Transaction transaction = new Transaction(time, quantity, merchandise, date);
+        System.out.println("Stock level before recordsales: " + merchandise.getStockLevel());
         merchandise.reduceStock(quantity);
+        System.out.println("Stock level after recordsales: " + merchandise.getStockLevel());
+
+        List<Merchandise> merchandiseList = getAllMerchandise(this.store);
+        
+        for (Merchandise m : merchandiseList) {
+            if (m.getName().equals(merchandise.getName())){
+                m.reduceStock(quantity);
+                System.out.println(getName());
+            };
+
+        }
+        this.store.replaceMerchandiseList(merchandiseList);
+
+        List<Merchandise> ml = getAllMerchandise(this.store);
+        // Print header
+        System.out.println("recordSales");
+        System.out.printf("%-20s%-20s%-20s%-20s\n", "Merchandise", "Stock Level", "Unit Price", "Unit Cost");
+    
+        // Print each merchandise item
+        for (Merchandise m : ml) {
+            System.out.printf("%-20s%-20d%-20.2f%-20.2f\n",
+                    m.getName(), m.getStockLevel(), m.getUnitPrice(), m.getUnitCost());
+        }
         this.store.updateTransactions(transaction);
     }
 
@@ -27,8 +51,8 @@ public class SalesStaff extends User implements Serializable {
         return this.store.findMerchandise(merchandiseName);
     }
 
-    public List<Merchandise> getAllMerchandise(){
-        return this.store.getMerchandiseList();
+    public List<Merchandise> getAllMerchandise(Store s){
+        return s.getMerchandiseList();
     }
 
     public List<Transaction> searchSaleHistoryByDate(LocalDate date) {

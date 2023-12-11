@@ -207,6 +207,9 @@ public class Store implements Serializable {
         }
     }
 
+    public void replaceMerchandiseList(List<Merchandise> ml) {
+        this.merchandiseList = ml;
+    }
 
     public void loadMerchandiseList() {
         try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream("merchandiseList.ser"))) {
