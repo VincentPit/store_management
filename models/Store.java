@@ -11,23 +11,60 @@ public class Store implements Serializable {
 
     public Store() {
 
-        this.users = new ArrayList<User>();
-        BusinessOwner owner = new BusinessOwner("Angel", "123", "123", this, LocalDate.now());
-        this.users.add(owner);
-        InventoryManager inventoryManager = new InventoryManager("Aaron","124", "124",this,LocalDate.now());
-        this.users.add(inventoryManager);
+        try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream("merchandiseList.ser"))) {
+            List<Merchandise> loadedList = (List<Merchandise>) ois.readObject();
+            merchandiseList = loadedList;
+        } catch (FileNotFoundException e) {
+            // File not found, create a new merchandise list
+            this.merchandiseList = new ArrayList<Merchandise>();
+            Merchandise m1 = new Merchandise("Laptop", 1000.0, 1200.0, 10);
+            Merchandise m2 = new Merchandise("Phone", 500.0, 600.0, 20);
+            this.merchandiseList.add(m1);
+            this.merchandiseList.add(m2);
+            saveMerchandiseList(); // Optionally save the new empty list to the file
+        } catch (IOException | ClassNotFoundException e) {
+            // Handle other exceptions (e.g., IOException, ClassNotFoundException)
+            e.printStackTrace();
+        }
+        
+        try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream("userList.ser"))) {
+            List<User> loadedList = (List<User>) ois.readObject();
+            this.users = loadedList;
+        } catch (FileNotFoundException e) {
+            // File not found, create a new user list
+            this.users = new ArrayList<User>();
+            BusinessOwner owner = new BusinessOwner("Angel", "123", "123", this, LocalDate.now());
+            this.users.add(owner);
+            InventoryManager inventoryManager = new InventoryManager("Aaron","124", "124",this,LocalDate.now());
+            this.users.add(inventoryManager);
+            SalesStaff salesStaff = new SalesStaff("Stephen", "345", this, "345",  LocalDate.now());
+            this.users.add(owner);
+            saveUserList(); // Optionally save the new empty list to the file
+        } catch (IOException | ClassNotFoundException e) {
+            // Handle other exceptions (e.g., IOException, ClassNotFoundException)
+            e.printStackTrace();
+        }
+
+        
         this.transactions = new ArrayList<Transaction>();
-        this.merchandiseList = new ArrayList<Merchandise>();
+
+        try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream("userList.ser"))) {
+            List<Merchandise> loadedList = (List<Merchandise>) ois.readObject();
+            this.merchandiseList = loadedList;
+        } catch (FileNotFoundException e) {
+            // File not found, create a new user list
+            this.merchandiseList = new ArrayList<Merchandise>();
+            saveMerchandiseList(); // Optionally save the new empty list to the file
+        } catch (IOException | ClassNotFoundException e) {
+            // Handle other exceptions (e.g., IOException, ClassNotFoundException)
+            e.printStackTrace();
+        }
+        
 
         //for testing
-        Merchandise m1 = new Merchandise("Laptop", 1000.0, 1200.0, 10);
-        Merchandise m2 = new Merchandise("Phone", 500.0, 600.0, 20);
-        this.merchandiseList.add(m1);
-        this.merchandiseList.add(m2);
-
         // Add some sample transactions
-        transactions.add(new Transaction(LocalTime.now(), 2, m1, LocalDate.now()));
-        transactions.add(new Transaction(LocalTime.now(), 1, m2, LocalDate.now()));
+        //transactions.add(new Transaction(LocalTime.now(), 2, m1, LocalDate.now()));
+        //transactions.add(new Transaction(LocalTime.now(), 1, m2, LocalDate.now()));
         //Delete after testing
 
 
@@ -186,7 +223,7 @@ public class Store implements Serializable {
     }
 
     public List<Merchandise> getMerchandiseList(){
-        //loadMerchandiseList();
+        loadMerchandiseList();
         return this.merchandiseList;
     }
 

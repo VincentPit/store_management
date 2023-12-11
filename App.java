@@ -14,7 +14,9 @@ public class App {
         if (store == null) {
             //If the store is not found, create a new one
             System.out.println("Creating a new store.");
+            
             store = new Store();
+
             saveStoreToFile(store);
         } else {
             System.out.println("Store loaded from file.");
