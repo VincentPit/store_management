@@ -34,7 +34,20 @@ public class Store implements Serializable {
     }
 
     public void addUser(User user) {
-        this.users.add(user);
+
+
+        if (user.getType() == "SalesStaff"){
+            SalesStaff new_user = new SalesStaff(user.getName(), user.getStaffCode(), user.getStore(), user.getPwd(), user.getDateOfEnrolment());
+            this.users.add(new_user);
+        } else if (user.getType() == "BusinessOwner"){
+            BusinessOwner new_user = new BusinessOwner(user.getName(), user.getStaffCode(),  user.getPwd(),user.getStore(), user.getDateOfEnrolment());
+            this.users.add(new_user);
+        } else {
+            InventoryManager new_user = new InventoryManager(user.getName(), user.getStaffCode(),  user.getPwd(),user.getStore(), user.getDateOfEnrolment());
+            this.users.add(new_user);
+        }
+
+        
         saveUserList();
     }
 
