@@ -15,22 +15,11 @@ public class SalesStaff extends User implements Serializable {
         LocalTime time = LocalTime.now();
         LocalDate date = LocalDate.now();
         Transaction transaction = new Transaction(time, quantity, merchandise, date);
-        System.out.println("Stock level before recordsales: " + merchandise.getStockLevel());
-        merchandise.reduceStock(quantity);
-        System.out.println("Stock level after recordsales: " + merchandise.getStockLevel());
-
-        List<Merchandise> merchandiseList = getAllMerchandise(this.store);
+        //System.out.println("Stock level before recordsales: " + merchandise.getStockLevel());
         
-        for (Merchandise m : merchandiseList) {
-            if (m.getName().equals(merchandise.getName())){
-                m.reduceStock(quantity);
-                System.out.println(getName());
-            };
+        //System.out.println("Stock level after recordsales: " + merchandise.getStockLevel());
 
-        }
-
-        
-        this.store.replaceMerchandiseList(merchandiseList);
+        this.store.sold(quantity,merchandise);
 
         List<Merchandise> ml = getAllMerchandise(this.store);
         // Print header

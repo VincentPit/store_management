@@ -182,7 +182,7 @@ public class Store implements Serializable {
     }
 
     public List<Merchandise> getMerchandiseList(){
-        loadMerchandiseList();
+        //loadMerchandiseList();
         return this.merchandiseList;
     }
 
@@ -226,6 +226,24 @@ public class Store implements Serializable {
     }
     
     
+    public void sold(int quantity, Merchandise merchandise){
+        for (Merchandise m : this.merchandiseList) {
+            if (m.getName().equals(merchandise.getName())){
+                m.reduceStock(quantity);
+            };
+        }
+
+        saveMerchandiseList();
+        System.out.println("Stroe");
+        System.out.printf("%-20s%-20s%-20s%-20s\n", "Merchandise", "Stock Level", "Unit Price", "Unit Cost");
+        
+        // Print each merchandise item
+        for (Merchandise m : merchandiseList) {
+            System.out.printf("%-20s%-20d%-20.2f%-20.2f\n",
+                    m.getName(), m.getStockLevel(), m.getUnitPrice(), m.getUnitCost());
+        }
+
+    }
 
 
     public void saveUserList() {
