@@ -46,8 +46,18 @@ public class Store implements Serializable {
             e.printStackTrace();
         }
 
-        
-        this.transactions = new ArrayList<Transaction>();
+
+        try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream("transactions.ser"))) {
+            List<Transaction> loadedList = (List<Transaction>) ois.readObject();
+            this.transactions = loadedList;
+        } catch (FileNotFoundException e) {
+            // File not found, create a new user list
+            this.transactions = new ArrayList<Transaction>();
+            saveTransactionList(); // Optionally save the new empty list to the file
+        } catch (IOException | ClassNotFoundException e) {
+            // Handle other exceptions (e.g., IOException, ClassNotFoundException)
+            e.printStackTrace();
+        }
 
         try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream("userList.ser"))) {
             List<Merchandise> loadedList = (List<Merchandise>) ois.readObject();
@@ -70,6 +80,8 @@ public class Store implements Serializable {
 
 
     }
+
+    
 
     public void addUser(User user) {
 
@@ -238,10 +250,12 @@ public class Store implements Serializable {
             this.transactions = new ArrayList<Transaction>();
         }
         this.transactions.add(transaction);
+        saveTransactionList();
         
     }
 
     public List<Transaction> getAllTransactions(){
+        loadTransactionList();
         return this.transactions;
     }
 
@@ -270,6 +284,20 @@ public class Store implements Serializable {
             e.printStackTrace();
         }
     }
+
+     public void loadTransactionList() {
+        try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream("transactions.ser"))) {
+            List<Transaction> loadedList = (List<Transaction>) ois.readObject();
+            this.transactions = loadedList;
+        } catch (FileNotFoundException e) {
+            // File not found, create a new user list
+            this.transactions = new ArrayList<Transaction>();
+            saveTransactionList(); // Optionally save the new empty list to the file
+        } catch (IOException | ClassNotFoundException e) {
+            // Handle other exceptions (e.g., IOException, ClassNotFoundException)
+            e.printStackTrace();
+        }
+    }
     
     
     public void sold(int quantity, Merchandise merchandise){
@@ -291,6 +319,13 @@ public class Store implements Serializable {
 
     }
 
+    public void saveTransactionList() {
+        try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream("transactions.ser"))) {
+            oos.writeObject(this.transactions);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 
     public void saveUserList() {
         try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream("userList.ser"))) {

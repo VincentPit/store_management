@@ -32,6 +32,7 @@ public class SalesStaff extends User implements Serializable {
                     m.getName(), m.getStockLevel(), m.getUnitPrice(), m.getUnitCost());
         }
         this.store.updateTransactions(transaction);
+        this.store.saveTransactionList();
     }
 
     public List<Transaction> getAllTransactions(){
