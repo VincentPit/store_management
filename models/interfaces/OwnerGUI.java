@@ -12,8 +12,8 @@ import java.util.*;
 
 public class OwnerGUI {
     private BusinessOwner businessOwner;
-    private DefaultTableModel model; // Declare model here
-    private JTable table; //Declare table
+    //private DefaultTableModel model; // Declare model here
+    //private JTable table; //Declare table
 
 
     public OwnerGUI(BusinessOwner businessOwner) {
@@ -26,16 +26,16 @@ public class OwnerGUI {
         // Create and set up the window
         JFrame frame = new JFrame("Business Owner Dashboard");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setSize(600, 400);
+        frame.setSize(430, 280);
 
         // Set layout manager for the frame
         frame.setLayout(new BorderLayout(10, 10));
 
         // Greeting label
         JLabel greetingLabel = new JLabel("Hi, " + businessOwner.getName());
-        greetingLabel.setFont(new Font("Arial", Font.BOLD, 16));
+        greetingLabel.setFont(new Font("Arial", Font.BOLD, 20));
         greetingLabel.setHorizontalAlignment(JLabel.LEFT);
-        greetingLabel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10)); // Padding around label
+        greetingLabel.setBorder(BorderFactory.createEmptyBorder(8, 8, 8, 8)); // Padding around label
 
         // Create a panel for buttons with a GridBagLayout for flexibility
         JPanel buttonPanel = new JPanel(new GridBagLayout());
@@ -47,19 +47,11 @@ public class OwnerGUI {
         // Creating buttons
         JButton viewMerchButton = new JButton("View Merchandise");
         JButton viewPersonnelButton = new JButton("View Personnel");
-        JButton addInventoryManagerButton = new JButton("Add Inventory Manager");
-        JButton deleteStaffButton = new JButton("Delete Staff");
-        JButton setDiscountButton = new JButton("Set Discount");
-        JButton setPriceButton = new JButton("Set Price");
         JButton exitButton = new JButton("Exit"); // Exit button
 
         // Adding buttons to the panel
         buttonPanel.add(viewMerchButton, gbc);
         buttonPanel.add(viewPersonnelButton, gbc);
-        buttonPanel.add(addInventoryManagerButton, gbc);
-        buttonPanel.add(deleteStaffButton, gbc);
-        buttonPanel.add(setDiscountButton, gbc);
-        buttonPanel.add(setPriceButton, gbc);
         buttonPanel.add(exitButton, gbc); // Add the exit button
 
         // Adding components to the frame
@@ -104,10 +96,17 @@ public class OwnerGUI {
         merchandiseFrame.setSize(500, 300);
 
         // Table to display merchandise
-        String[] columns = {"Name", "Unit Cost", "Unit Price", "Stock Level"};
-        model = new DefaultTableModel(columns, 0);
-        table = new JTable(model);
-        refreshMerchandiseTable();
+        String[] columns = {"Name", "Unit Cost", "Unit Price", "Stock Level", "Qty Sold"};
+        //model = new DefaultTableModel(columns, 0);
+        DefaultTableModel model = new DefaultTableModel(columns, 0) {
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                // This will make all cells in the table non-editable
+                return false;
+            }
+        };
+        JTable table = new JTable(model);
+        refreshMerchandiseTable(model);
 
         //Load merchandise data into the table
 //         for (Merchandise m : businessOwner.getStore().getMerchandiseList()) {
@@ -118,12 +117,13 @@ public class OwnerGUI {
         JButton addMerchButton = new JButton("Add New");
         JButton deleteMerchButton = new JButton("Delete");
         JButton searchMerchButton = new JButton("Search");
+        JButton editMerchandiseButton = new JButton("Edit");
 
         // Add action listeners to these buttons
         addMerchButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                addMerchandise();
+                addMerchandise(model);
             }
         });
 
@@ -139,7 +139,7 @@ public class OwnerGUI {
                     businessOwner.deleteMerchandise(merchandiseName);
 
                     // Refresh the merchandise table
-                    refreshMerchandiseTable();
+                    refreshMerchandiseTable(model);
                 } else {
                     JOptionPane.showMessageDialog(merchandiseFrame, "Please select a merchandise to delete.");
                 }
@@ -149,15 +149,29 @@ public class OwnerGUI {
         searchMerchButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                showSearchDialog(merchandiseFrame);
+                showSearchDialog(merchandiseFrame, table);
             }
         });
+
+        editMerchandiseButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                int selectedRow = table.getSelectedRow();
+                if (selectedRow >= 0) {
+                    displayEditMerchandiseForm(model, table, selectedRow);
+                } else {
+                    JOptionPane.showMessageDialog(merchandiseFrame, "Please select a merchandise to edit.");
+                }
+            }
+        });
+
 
         // Layout for buttons
         JPanel merchButtonPanel = new JPanel();
         merchButtonPanel.add(addMerchButton);
         merchButtonPanel.add(deleteMerchButton);
         merchButtonPanel.add(searchMerchButton);
+        merchButtonPanel.add(editMerchandiseButton);
 
         // Add components to the frame
         merchandiseFrame.add(new JScrollPane(table), BorderLayout.CENTER);
@@ -168,22 +182,81 @@ public class OwnerGUI {
         merchandiseFrame.setVisible(true);
     }
 
-    private void refreshMerchandiseTable() {
+    private void refreshMerchandiseTable(DefaultTableModel model) {
         model.setRowCount(0); // Clear existing data
         // Load merchandise data
         List<Merchandise> merchandiseList = businessOwner.getMerchandiseList();
         for (Merchandise m : merchandiseList) {
-            model.addRow(new Object[]{m.getName(), m.getUnitCost(), m.getUnitPrice(), m.getStockLevel()});
+            model.addRow(new Object[]{m.getName(), m.getUnitCost(), m.getUnitPrice(), m.getStockLevel(), m.getQtySold()});
         }
     }
 
-    private void addMerchandise() {
+    private void displayEditMerchandiseForm(DefaultTableModel merchandiseModel, JTable merchandiseTable, int selectedRow) {
+        JFrame editFrame = new JFrame("Edit Merchandise");
+        editFrame.setLayout(new GridLayout(0, 2));
+        editFrame.setSize(400, 300);
+
+        // Create and populate fields for merchandise attributes
+        JTextField nameField = new JTextField(merchandiseModel.getValueAt(selectedRow, 0).toString());
+        JTextField unitPriceField = new JTextField(merchandiseModel.getValueAt(selectedRow, 2).toString());
+
+
+        // Add fields to the frame
+        editFrame.add(new JLabel("Name:")); editFrame.add(nameField);
+        editFrame.add(new JLabel("Unit Price:")); editFrame.add(unitPriceField);
+
+
+        // Save button
+        JButton saveButton = new JButton("Save");
+        editFrame.add(saveButton);
+
+        JButton resetButton = new JButton("Reset");
+        editFrame.add(resetButton);
+
+        // Save button action listener
+        saveButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                // Validate and save changes
+                // Update the merchandiseModel and possibly the underlying data
+                merchandiseModel.setValueAt(nameField.getText(), selectedRow, 0);
+                merchandiseModel.setValueAt(Double.parseDouble(unitPriceField.getText()), selectedRow, 2);
+
+
+                // Close the edit frame
+                editFrame.dispose();
+
+                // Optionally, update the underlying data structure and persist changes
+            }
+        });
+
+        // Store the original values to reset them later
+        String originalName = nameField.getText();
+        String originalUnitPrice = unitPriceField.getText();
+
+        // Add action listener to the reset button
+        resetButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                // Reset the fields to the original values
+                nameField.setText(originalName);
+                unitPriceField.setText(originalUnitPrice);
+
+            }
+        });
+
+
+        editFrame.setLocationRelativeTo(null);
+        editFrame.setVisible(true);
+    }
+
+
+    private void addMerchandise(DefaultTableModel model) {
         // Create a new frame for adding new merchandise
         JFrame addFrame = new JFrame("Add New Merchandise");
-        addFrame.setSize(300, 200);
-
+        addFrame.setSize(250, 150);
         // Panel for form fields
-        JPanel formPanel = new JPanel(new GridLayout(5, 2, 5, 5)); // 5 rows, 2 columns
+        JPanel formPanel = new JPanel(new GridLayout(3, 2, 10, 5)); // 5 rows, 2 columns
 
         // Form fields
         formPanel.add(new JLabel("Name:"));
@@ -197,13 +270,16 @@ public class OwnerGUI {
         formPanel.add(new JLabel("Unit Price:"));
         JTextField unitPriceField = new JTextField();
         formPanel.add(unitPriceField);
+        JPanel buttonPanel = new JPanel(); // Create a panel for buttons
+        JButton submitButton = new JButton("Add");
+        JButton resetButton = new JButton("Reset");
+        buttonPanel.add(submitButton); // Add the submit button to the panel
+        buttonPanel.add(resetButton); // Add the reset button to the panel
 
-        formPanel.add(new JLabel("Stock Level:"));
-        JTextField stockLevelField = new JTextField();
-        formPanel.add(stockLevelField);
+
 
         // Submit button
-        JButton submitButton = new JButton("Add Merchandise");
+
         submitButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -211,12 +287,11 @@ public class OwnerGUI {
                 String name = nameField.getText();
                 double unitCost = Double.parseDouble(unitCostField.getText());
                 int unitPrice = Integer.parseInt(unitPriceField.getText());
-                int stockLevel = Integer.parseInt(stockLevelField.getText());
 
                 // Add new merchandise to the store
-                businessOwner.addNewMerchandise(name, unitCost, unitPrice, stockLevel);
+                businessOwner.addNewMerchandise(name, unitCost, unitPrice, 0);
 
-                refreshMerchandiseTable();
+                refreshMerchandiseTable(model);
 
                 // Close the add frame
                 addFrame.dispose();
@@ -226,18 +301,30 @@ public class OwnerGUI {
             }
         });
 
+        resetButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                // Parse input fields and add new merchandise
+                nameField.setText("");
+                unitCostField.setText("");
+                unitPriceField.setText("");
+
+            }
+        });
+
 
         // Add components to the frame
         addFrame.setLayout(new BorderLayout());
         addFrame.add(formPanel, BorderLayout.CENTER);
-        addFrame.add(submitButton, BorderLayout.SOUTH);
+        //addFrame.add(submitButton);
+        addFrame.add(buttonPanel,BorderLayout.SOUTH);
 
         // Display the frame
         addFrame.setLocationRelativeTo(null);
         addFrame.setVisible(true);
     }
 
-    private void showSearchDialog(JFrame frame) {
+    private void showSearchDialog(JFrame frame, JTable table) {
         // Create a dialog for search input
         JDialog searchDialog = new JDialog(frame, "Search Merchandise", true);
         searchDialog.setLayout(new FlowLayout());
@@ -254,7 +341,7 @@ public class OwnerGUI {
             @Override
             public void actionPerformed(ActionEvent e) {
                 String searchText = searchTextField.getText();
-                if (!searchAndHighlightMerchandise(searchText)) {
+                if (!searchAndHighlightMerchandise(searchText, table)) {
                     JOptionPane.showMessageDialog(searchDialog, "Merchandise not found.");
                 }
                 searchDialog.dispose();
@@ -266,7 +353,7 @@ public class OwnerGUI {
     }
 
 
-    private boolean searchAndHighlightMerchandise(String searchText) {
+    private boolean searchAndHighlightMerchandise(String searchText, JTable table) {
         boolean foundMatch = false;
 
         // Clear existing selection

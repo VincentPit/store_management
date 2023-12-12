@@ -35,7 +35,7 @@ public class Store implements Serializable {
             this.users = new ArrayList<User>();
             BusinessOwner owner = new BusinessOwner("Angel", "123", "123", this, LocalDate.now());
             this.users.add(owner);
-            InventoryManager inventoryManager = new InventoryManager("Aaron","124", "124",this,LocalDate.now());
+            InventoryManager inventoryManager = new InventoryManager("Aaron","234", "234",this,LocalDate.now());
             this.users.add(inventoryManager);
             SalesStaff salesStaff = new SalesStaff("Stephen", "345", this, "345",  LocalDate.now());
             this.users.add(salesStaff);
