@@ -238,16 +238,21 @@ public class InventoryManagerGUI {
         salesModel.setRowCount(0);
         DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm:ss");
-        for (Transaction transaction : transactions) {
-            salesModel.addRow(new Object[]{
-                    transaction.getDate().format(dateFormatter),
-                    transaction.getTime().format(timeFormatter),
-                    transaction.getMerchandise().getName(),
-                    transaction.getQuantity(),
-                    transaction.getMerchandise().getUnitPrice() * transaction.getQuantity()
-            });
+
+        // Check if transactions list is not null
+        if (transactions != null) {
+            for (Transaction transaction : transactions) {
+                salesModel.addRow(new Object[]{
+                        transaction.getDate().format(dateFormatter),
+                        transaction.getTime().format(timeFormatter),
+                        transaction.getMerchandise().getName(),
+                        transaction.getQuantity(),
+                        transaction.getMerchandise().getUnitPrice() * transaction.getQuantity()
+                });
+            }
         }
     }
+
 
     private void refreshSalesHistoryTable() {
         updateSalesTableModel(inventoryManager.getAllTransactions());
