@@ -24,6 +24,10 @@ public class App {
 
 
         LoginInterface login = new LoginInterface(store);
+        
+        store.saveMerchandiseList();
+        store.saveTransactionList();
+        store.saveUserList();
         saveStoreToFile(store);
     }
 
