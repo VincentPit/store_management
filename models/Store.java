@@ -59,7 +59,7 @@ public class Store implements Serializable {
             e.printStackTrace();
         }
 
-        try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream("userList.ser"))) {
+        try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream("merchandiseList.ser"))) {
             List<Merchandise> loadedList = (List<Merchandise>) ois.readObject();
             this.merchandiseList = loadedList;
         } catch (FileNotFoundException e) {
@@ -261,6 +261,7 @@ public class Store implements Serializable {
 
     public void saveMerchandiseList() {
         try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream("merchandiseList.ser"))) {
+
             oos.writeObject(this.getMerchandiseList());
         } catch (IOException e) {
             e.printStackTrace();
@@ -329,7 +330,7 @@ public class Store implements Serializable {
 
     public void saveUserList() {
         try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream("userList.ser"))) {
-            oos.writeObject(this.getUserList());
+            oos.writeObject(this.users);
         } catch (IOException e) {
             e.printStackTrace();
         }

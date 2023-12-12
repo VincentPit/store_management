@@ -186,6 +186,7 @@ public class OwnerGUI {
         model.setRowCount(0); // Clear existing data
         // Load merchandise data
         List<Merchandise> merchandiseList = businessOwner.getMerchandiseList();
+        
         for (Merchandise m : merchandiseList) {
             model.addRow(new Object[]{m.getName(), m.getUnitCost(), m.getUnitPrice(), m.getStockLevel(), m.getQtySold()});
         }
