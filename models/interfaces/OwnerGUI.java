@@ -205,6 +205,7 @@ public class OwnerGUI {
         // Add fields to the frame
         editFrame.add(new JLabel("Name:")); editFrame.add(nameField);
         editFrame.add(new JLabel("Unit Price:")); editFrame.add(unitPriceField);
+        Merchandise selectedMerchandise = businessOwner.getStore().findMerchandise(merchandiseModel.getValueAt(selectedRow, 0).toString());
 
 
         // Save button
@@ -223,7 +224,7 @@ public class OwnerGUI {
                 merchandiseModel.setValueAt(nameField.getText(), selectedRow, 0);
                 merchandiseModel.setValueAt(Double.parseDouble(unitPriceField.getText()), selectedRow, 2);
 
-
+                businessOwner.editMerchandise(selectedMerchandise, nameField.getText(), Double.parseDouble(unitPriceField.getText()));
                 // Close the edit frame
                 editFrame.dispose();
 
@@ -697,6 +698,8 @@ public class OwnerGUI {
         editFrame.add(saveButton);
         editFrame.add(resetButton);
 
+        User u = businessOwner.findUser(personnelModel.getValueAt(selectedRow, 0).toString());
+
         saveButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -705,6 +708,8 @@ public class OwnerGUI {
                 personnelModel.setValueAt(nameField.getText(), selectedRow, 1);
                 personnelModel.setValueAt(salaryField.getText(), selectedRow, 2);
                 personnelModel.setValueAt(jobTypeComboBox.getSelectedItem(), selectedRow, 4);
+
+                businessOwner.editUser(u, nameField.getText(), Double.parseDouble(salaryField.getText()), jobTypeComboBox.getSelectedItem().toString());
 
                 // Close the edit frame
                 editFrame.dispose();

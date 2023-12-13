@@ -19,12 +19,18 @@ public class Merchandise implements Serializable {
 
     public void setPrice(double price){
         this.unitPrice = price;
+    }
 
+    public void setUnitPrice(double unitPrice) {
+        this.unitPrice = unitPrice;
     }
 
     public String getName(){
         return this.name;
+    }
 
+    public void setName(String name) {
+        this.name = name;
     }
 
     public double getUnitPrice(){

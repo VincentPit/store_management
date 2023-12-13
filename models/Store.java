@@ -124,11 +124,25 @@ public class Store implements Serializable {
         return null;
     }
 
-    public void addNewMerchandise(String name, double unitCost, int unitPrice, int stockLevel) {
+    public void addNewMerchandise(String name, double unitCost, double unitPrice, int stockLevel) {
         Merchandise m = new Merchandise(name, unitCost, unitPrice, stockLevel);
         merchandiseList.add(m);
         saveMerchandiseList();
     }
+
+    public void editMerchandise(Merchandise m, String name, double unitPrice){
+        m.setName(name);
+        m.setUnitPrice(unitPrice);
+        saveMerchandiseList();
+    }
+
+//    public void editUser(User u, String name, double salary, String type){
+//        u.setName(name);
+//        u.setSalary(salary);
+//        u.setType(type);
+//        saveUserList();
+//    }
+
 
     public void deleteMerchandise(String merchandiseName) {
         Merchandise toRemove = null;

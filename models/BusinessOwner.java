@@ -30,6 +30,32 @@ public class BusinessOwner extends User implements Serializable {
         this.store.deleteMerchandise(merchandiseName);
     }
 
+    public void editMerchandise(Merchandise m, String name, double unitPrice){
+        this.store.editMerchandise(m, name, unitPrice);
+    }
+
+//    public void editUser(User u, String name, double amt, String type){
+//        this.store.editUser(u,name,amt,type);
+//    }
+
+    public void editUser(User u, String name, double salary, String type){
+        u.setName(name);
+        u.setSalary(salary);
+        u.setType(type);
+        this.store.saveUserList();
+    }
+
+    public User findUser(String staffCode){
+        for (User user : this.getStore().getUserList()) {
+            if (user.getStaffCode().equals(staffCode)) {
+                return user; // User found
+            }
+        }
+        return null; // User not found
+    }
+
+
+
     public void addSalesStaff(String name, String staffCode, String passWord, LocalDate date)
     {   //if none of the user share the same staffCode then allow add user using this staffCode
         if(!store.findUserByStaffCode(staffCode))
