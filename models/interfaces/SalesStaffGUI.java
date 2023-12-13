@@ -6,6 +6,7 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.time.LocalDate;
+import java.util.concurrent.Flow;
 
 
 public class SalesStaffGUI {
@@ -19,7 +20,7 @@ public class SalesStaffGUI {
         this.store = salesStaff.getStore();
 
         frame = new JFrame("SalesStaff Main Menu");
-        frame.setSize(800, 600);
+        frame.setSize(300, 100);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         JLabel helloLabel = new JLabel("Hello " + salesStaff.getName());
         helloLabel.setHorizontalAlignment(JLabel.CENTER);
@@ -44,7 +45,7 @@ public class SalesStaffGUI {
         buttonsPanel.setLayout(new BoxLayout(buttonsPanel, BoxLayout.Y_AXIS));
         buttonsPanel.add(goToTransactionButton);
         buttonsPanel.add(goToMerchandiseButton);
-        JPanel mainPanel = new JPanel(new BorderLayout());
+        JPanel mainPanel = new JPanel(new FlowLayout());
         mainPanel.add(helloLabel, BorderLayout.NORTH);
         mainPanel.add(buttonsPanel, BorderLayout.CENTER);
 
