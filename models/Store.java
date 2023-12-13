@@ -294,7 +294,10 @@ public class Store implements Serializable {
             // File not found, create a new merchandise list
             merchandiseList = new ArrayList<Merchandise>();
             saveMerchandiseList(); // Optionally save the new empty list to the file
-        } catch (IOException | ClassNotFoundException e) {
+        } catch (EOFException e) {
+            e.printStackTrace();
+        }
+        catch (IOException | ClassNotFoundException e) {
             // Handle other exceptions (e.g., IOException, ClassNotFoundException)
             e.printStackTrace();
         }
