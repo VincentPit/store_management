@@ -16,16 +16,35 @@ public class SalesStaffGUI {
     private Store store; 
 
     public SalesStaffGUI(SalesStaff salesStaff) {
-        this.salesStaff = salesStaff;
-        this.store = salesStaff.getStore();
 
-        frame = new JFrame("SalesStaff Main Menu");
-        frame.setSize(300, 100);
+        frame = new JFrame("Sales Staff Dashboard");
+        frame.setSize(430, 280);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        JLabel helloLabel = new JLabel("Hello " + salesStaff.getName());
-        helloLabel.setHorizontalAlignment(JLabel.CENTER);
+        frame.setLayout(new BorderLayout(10, 10));
 
-        JButton goToTransactionButton = new JButton("Go to Transaction");
+        JLabel helloLabel = new JLabel("Hello " + salesStaff.getName());
+        helloLabel.setFont(new Font("Arial", Font.BOLD, 20));
+        helloLabel.setHorizontalAlignment(JLabel.LEFT);
+        helloLabel.setBorder(BorderFactory.createEmptyBorder(8, 8, 8, 8)); // Padding around label
+
+        JPanel buttonPanel = new JPanel(new GridBagLayout());
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.gridwidth = GridBagConstraints.REMAINDER;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.insets = new Insets(5, 5, 5, 5); // Padding around buttons
+
+        JButton goToMerchandiseButton = new JButton("Add Sales Record");
+        JButton goToTransactionButton = new JButton("View Transaction History");
+        JButton exitButton = new JButton("Exit");
+
+        buttonPanel.add(goToMerchandiseButton, gbc);
+        buttonPanel.add(goToTransactionButton, gbc);
+        buttonPanel.add(exitButton, gbc);
+
+        frame.add(helloLabel, BorderLayout.NORTH);
+        frame.add(buttonPanel, BorderLayout.CENTER);
+
+
         goToTransactionButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -33,7 +52,7 @@ public class SalesStaffGUI {
             }
         });
 
-        JButton goToMerchandiseButton = new JButton("Go to Merchandise");
+
         goToMerchandiseButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -41,18 +60,18 @@ public class SalesStaffGUI {
             }
         });
 
-        JPanel buttonsPanel = new JPanel();
-        buttonsPanel.setLayout(new BoxLayout(buttonsPanel, BoxLayout.Y_AXIS));
-        buttonsPanel.add(goToTransactionButton);
-        buttonsPanel.add(goToMerchandiseButton);
-        JPanel mainPanel = new JPanel(new FlowLayout());
-        mainPanel.add(helloLabel, BorderLayout.NORTH);
-        mainPanel.add(buttonsPanel, BorderLayout.CENTER);
+        exitButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                frame.dispose(); // Close the current window
+                new LoginInterface(salesStaff.getStore());
+            }
+        });
 
-        frame.add(mainPanel);
         frame.setLocationRelativeTo(null);
         frame.setVisible(true);
     }
+
 
     private void openSalesStaffTransactionGUI() {
 

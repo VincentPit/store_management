@@ -27,11 +27,11 @@ public class InventoryManagerGUI {
     private void createAndShowInitialGUI() {
         JFrame frame = new JFrame("Inventory Manager Dashboard");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setSize(500, 300);
+        frame.setSize(430, 280);
         frame.setLayout(new BorderLayout(10, 10));
 
         JLabel greetingLabel = new JLabel("Welcome, " + inventoryManager.getName());
-        greetingLabel.setFont(new Font("Arial", Font.BOLD, 16));
+        greetingLabel.setFont(new Font("Arial", Font.BOLD, 20));
         greetingLabel.setHorizontalAlignment(JLabel.LEFT);
         greetingLabel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
         frame.add(greetingLabel, BorderLayout.NORTH);
@@ -42,8 +42,8 @@ public class InventoryManagerGUI {
         gbc.fill = GridBagConstraints.HORIZONTAL;
         gbc.insets = new Insets(5, 5, 5, 5);
 
-        JButton inventoryButton = new JButton("Inventory");
-        JButton salesHistoryButton = new JButton("Sales History");
+        JButton inventoryButton = new JButton("View Inventory Level");
+        JButton salesHistoryButton = new JButton("View Transaction History");
         JButton exitButton = new JButton("Exit");
 
         inventoryButton.addActionListener(e -> openInventoryManagement());
@@ -77,8 +77,14 @@ public class InventoryManagerGUI {
         inventoryFrame.setSize(500, 300);
         inventoryFrame.setLayout(new BorderLayout(10, 10));
 
-        String[] columns = {"Name", "Unit Cost", "Unit Price", "Stock Level"};
-        model = new DefaultTableModel(columns, 0);
+        String[] columns = {"Name", "Unit Cost", "Unit Price", "Stock Level", "Qty Sold"};
+        model = new DefaultTableModel(columns, 0) {
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                // This will make all cells in the table non-editable
+                return false;
+            }
+        };
         table = new JTable(model);
         refreshMerchandiseTable();
 
@@ -134,7 +140,7 @@ public class InventoryManagerGUI {
         model.setRowCount(0);
         List<Merchandise> merchandiseList = inventoryManager.getStore().getMerchandiseList();
         for (Merchandise m : merchandiseList) {
-            model.addRow(new Object[]{m.getName(), m.getUnitCost(), m.getUnitPrice(), m.getStockLevel()});
+            model.addRow(new Object[]{m.getName(), m.getUnitCost(), m.getUnitPrice(), m.getStockLevel(), m.getQtySold()});
         }
     }
 
