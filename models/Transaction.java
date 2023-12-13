@@ -7,13 +7,14 @@ import java.time.*;
 public class Transaction implements Serializable {
     private LocalTime time;
     private LocalDate date;
+    private LocalDateTime current;
     private double amount;
     private Merchandise merchandise;
     private int quantity;
 
 
     public Transaction(LocalTime time, int q, Merchandise merchandise, LocalDate date) {
-
+        this.current=LocalDateTime.now();
         this.time = LocalTime.now();
         this.quantity = q;
         this.merchandise = merchandise;
@@ -37,5 +38,7 @@ public class Transaction implements Serializable {
         return this.date;
     }
 
-    
+    public LocalDateTime getCurrent() {
+        return current;
+    }
 }

@@ -322,6 +322,7 @@ public class Store implements Serializable {
         for (Merchandise m : this.merchandiseList) {
             if (m.getName().equals(merchandise.getName())){
                 m.reduceStock(quantity);
+                m.setQtySold(quantity);
             };
         }
 

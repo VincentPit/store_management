@@ -4,6 +4,7 @@ import models.*;
 import java.time.LocalDate;
 import java.util.List;
 import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -21,14 +22,25 @@ public class SalesStaffGUI_Merchandises {
         this.salesStaff = salesStaff;
 
         frame = new JFrame("SalesStaff Merchandise Management");
-        frame.setSize(700, 400);
+        frame.setSize(500, 300);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-        merchandiseTextArea = new JTextArea();
-        JScrollPane scrollPane = new JScrollPane(merchandiseTextArea);
+        String[] columns = {"Name", "Unit Price", "Stock Level"};
+        DefaultTableModel model = new DefaultTableModel(columns, 0) {
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                // This will make all cells in the table non-editable
+                return false;
+            }
+        };
+        JTable table = new JTable(model);
+        refreshMerchandiseTable(model);
+
+        //merchandiseTextArea = new JTextArea();
+        JScrollPane scrollPane = new JScrollPane(table);
 
         merchandiseComboBox = new JComboBox<>();
-        quantityTextField = new JTextField();
+       // quantityTextField = new JTextField();
         JButton sellButton = new JButton("Sell");
         JButton backButton = new JButton("Back"); // Add a back button
 
@@ -60,8 +72,8 @@ public class SalesStaffGUI_Merchandises {
         sellPanel.add(new JLabel("Quantity:"));
         
         // Set the preferred width of the quantity input box
-        quantityTextField.setPreferredSize(new Dimension(100, 25));
-        sellPanel.add(quantityTextField);
+        //quantityTextField.setPreferredSize(new Dimension(100, 25));
+        //sellPanel.add(quantityTextField);
         
         sellPanel.add(sellButton);
         sellPanel.add(backButton);
@@ -70,10 +82,20 @@ public class SalesStaffGUI_Merchandises {
         frame.add(sellPanel, BorderLayout.SOUTH);
 
         updateMerchandiseList();
-        refreshMerchandiseTextArea(salesStaff);
+        //refreshMerchandiseTextArea(salesStaff);
         frame.setLocationRelativeTo(null);
         frame.setVisible(true);
     }
+    private void refreshMerchandiseTable(DefaultTableModel model) {
+        model.setRowCount(0); // Clear existing data
+        // Load merchandise data
+        List<Merchandise> merchandiseList = salesStaff.getStore().getMerchandiseList();
+
+        for (Merchandise m : merchandiseList) {
+            model.addRow(new Object[]{m.getName(), m.getUnitPrice(), m.getStockLevel(), m.getQtySold()});
+        }
+    }
+
 
     private void updateMerchandiseList() {
         List<Merchandise> merchandiseList = salesStaff.getAllMerchandise(salesStaff.getStore());
@@ -132,7 +154,7 @@ public class SalesStaffGUI_Merchandises {
         // Refresh UI
 
         updateMerchandiseList();
-        refreshMerchandiseTextArea(salesStaff);
+        //refreshMerchandiseTextArea(salesStaff);
 
         JOptionPane.showMessageDialog(frame, "Sale recorded successfully.");
     }
