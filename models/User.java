@@ -1,7 +1,6 @@
 package models;
-import models.*;
+
 import java.io.*;
-import java.util.*;
 import java.time.*;
 
 public class User implements Serializable {
@@ -9,28 +8,20 @@ public class User implements Serializable {
     private String staffCode;
     private String passWord;
 
-    //three type: SalesStaff, BusinessOwner, InventoryManager
+    //three types: SalesStaff, BusinessOwner, InventoryManager
     private String type;
     private double salary;
     private LocalDate dateOfEnrolment;
 
-    public Store store;
 
-//感觉不需要这个
-    public User(){
-//        this.name = null;
-//        this.staffCode = null;
-//        this.passWord = null;
-//        this.type = null;
-    }
+    public User(){}
 
-    public User(String name, String staffCode, String passWord, Store store,String type, LocalDate date) {
+    public User(String name, String staffCode, String passWord,String type, LocalDate now) {
         this.name = name;
         this.staffCode = staffCode;
         this.passWord = passWord;
         this.type = type;
-        this.store = store;
-        this.dateOfEnrolment= LocalDate.now();
+        this.dateOfEnrolment= now;
     }
 
     public String getName()
@@ -53,10 +44,6 @@ public class User implements Serializable {
         return this.type;
     }
 
-    public LocalDate getDate(){
-
-        return this.dateOfEnrolment;
-    }
 
     public void setType(String type) {
         this.type = type;
@@ -65,16 +52,6 @@ public class User implements Serializable {
     public void setName(String name)
     {
         this.name = name;
-    }
-    
-    public void setStaffCode(String staffCode)
-    {
-        this.staffCode = staffCode;
-    }
-    
-    public void setPwd(String passWord)
-    {
-        this.passWord = passWord;
     }
 
     public void setSalary(double amt){
@@ -90,9 +67,8 @@ public class User implements Serializable {
     }
 
 
-    public Store getStore(){
-        return this.store;
-    }
+
+
 
 
 

@@ -2,9 +2,11 @@ package models;
 import models.*;
 import java.io.*;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.ZoneId;
 import java.util.*;
-public class Store implements Serializable {
+public class Store implements Serializable, Inventory_Manager, Business_Owner, Sales_Staff {
     private List<User> users;
     private List<Transaction> transactions;
     private List<Merchandise> merchandiseList;
@@ -33,11 +35,11 @@ public class Store implements Serializable {
         } catch (FileNotFoundException e) {
             // File not found, create a new user list
             this.users = new ArrayList<User>();
-            BusinessOwner owner = new BusinessOwner("Angel", "123", "123", this, LocalDate.now());
+            BusinessOwner owner = new BusinessOwner("Angel", "123", "123",  LocalDate.now(), this);
             this.users.add(owner);
-            InventoryManager inventoryManager = new InventoryManager("Aaron","234", "234",this,LocalDate.now());
+            InventoryManager inventoryManager = new InventoryManager("Aaron","234", "234",LocalDate.now(), this);
             this.users.add(inventoryManager);
-            SalesStaff salesStaff = new SalesStaff("Stephen", "345", this, "345",  LocalDate.now());
+            SalesStaff salesStaff = new SalesStaff("Stephen", "345", "345",  LocalDate.now(), this);
             this.users.add(salesStaff);
             System.out.println(users);
             saveUserList(); // Optionally save the new empty list to the file
@@ -84,43 +86,27 @@ public class Store implements Serializable {
     
 
     public void addUser(User user) {
-
-
         if (user.getType() == "SalesStaff"){
-            SalesStaff new_user = new SalesStaff(user.getName(), user.getStaffCode(), user.getStore(), user.getPwd(), user.getDateOfEnrolment());
+            SalesStaff new_user = new SalesStaff(user.getName(), user.getStaffCode(), user.getPwd(), user.getDateOfEnrolment(), this);
             this.users.add(new_user);
         } else if (user.getType() == "BusinessOwner"){
-            BusinessOwner new_user = new BusinessOwner(user.getName(), user.getStaffCode(),  user.getPwd(),user.getStore(), user.getDateOfEnrolment());
+            BusinessOwner new_user = new BusinessOwner(user.getName(), user.getStaffCode(),  user.getPwd(), user.getDateOfEnrolment(), this);
             this.users.add(new_user);
         } else {
-            InventoryManager new_user = new InventoryManager(user.getName(), user.getStaffCode(),  user.getPwd(),user.getStore(), user.getDateOfEnrolment());
+            InventoryManager new_user = new InventoryManager(user.getName(), user.getStaffCode(),  user.getPwd(), user.getDateOfEnrolment(), this);
             this.users.add(new_user);
         }
-
         
         saveUserList();
     }
 
-    public Boolean findUserByName(String name){
-        for (User user : users) {
-            if (user.getName().equals(name)) {
-                return true; // User found
-            }
-        }
-        return false; // User not found
-    }
 
-    //Angel: 我感觉不需要，而且就正常contains了就行
     public Merchandise findMerchandise(String name) {
-        Map<String, Integer> result = new HashMap<>();
-    
         for (Merchandise merchandise : merchandiseList) {
             if (merchandise.getName().equals(name)) {
-                // Merchandise found, add unit cost and quantity to the result map
                 return merchandise;
             }
         }
-        // Merchandise not found, return an empty map
         return null;
     }
 
@@ -136,12 +122,6 @@ public class Store implements Serializable {
         saveMerchandiseList();
     }
 
-//    public void editUser(User u, String name, double salary, String type){
-//        u.setName(name);
-//        u.setSalary(salary);
-//        u.setType(type);
-//        saveUserList();
-//    }
 
 
     public void deleteMerchandise(String merchandiseName) {
@@ -165,7 +145,6 @@ public class Store implements Serializable {
             User user = iterator.next();
             if (user.getStaffCode().equals(staffCode)) {
                 iterator.remove();
-                // Add logic here to save/update the user list to external storage if needed
                 users.remove(user);
                 this.saveUserList();
                 return "User with staff code " + staffCode + " deleted successfully.";
@@ -175,79 +154,18 @@ public class Store implements Serializable {
     }
 
 
-    public Boolean findUserByStaffCode(String staffCode){
-        for (User user : users) {
-            if (user.getStaffCode().equals(staffCode)) {
-                return true; // User found
-            }
-        }
-        return false; // User not found
-    }
 
-    public User loginByName(String name, String pwd){
-        User empt = new User();
-        for (User user : users) {
-            if (user.getName().equals(name)) {
-                // Assuming User class has a getPassword() method
-                if (user.getPwd().equals(pwd)) {
-                    return user; // Successful login
-                } else {
-                    empt.setName("Incorrect password");
-                    return empt; // Incorrect password
-                }
-            }
-        }
-        empt.setName("User not found");
-        return empt; 
-    }
-    
-    public User loginByStaffCode(String staffCode , String pwd){
-        User empt = new User();
-        for (User user : users) {
-            if (user.getStaffCode().equals(staffCode)) {
-                // Assuming User class has a getPassword() method
-                if (user.getPwd().equals(pwd)) {
-                    return user; // Successful login
-                } else {
-                    empt.setName("Incorrect password");
-                    return empt; // Incorrect password
-                }
-            }
-        }
-        empt.setName("User not found");
-        return empt;
-    }
-    
-    
-    public void setPrice(String name, double price){
-        Merchandise merchandise = this.findMerchandise(name);
-        if (merchandise.getName() == name){
-            merchandise.setPrice(price);
-        }
-    }
-
-    public void restock(String merchandiseName, int additionalStock) {
-        for (Merchandise m : merchandiseList) {
-            if (m.getName().equals(merchandiseName)) {
-                int currentStock = m.getStockLevel();
-                m.setStockLevel(currentStock + additionalStock);
-                saveMerchandiseList();
-                return; // Exit the function once the merchandise is found and restocked
-            }
-        }
-        System.out.println("Merchandise not found: " + merchandiseName);
-    }
 
 
 
-    public void setDiscount(String name, double rate){
-        for (Merchandise merchandise : merchandiseList) {
-            if (merchandise.getName().equals(name)) {
-                // Merchandise found, add unit cost and quantity to the result map
-                merchandise.setPrice(rate * merchandise.getUnitPrice());
-            }
-        }
+    public void restock(String merchandiseName, int additionalStock) {
+        Merchandise m = findMerchandise(merchandiseName);
+        int currentStock = m.getStockLevel();
+        m.setStockLevel(currentStock + additionalStock);
+        saveMerchandiseList();
+        //System.out.println("Merchandise not found: " + merchandiseName);
     }
+
 
     public List<Merchandise> getMerchandiseList(){
         loadMerchandiseList();
@@ -282,9 +200,6 @@ public class Store implements Serializable {
         }
     }
 
-    public void replaceMerchandiseList(List<Merchandise> ml) {
-        this.merchandiseList = ml;
-    }
 
     public void loadMerchandiseList() {
         try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream("merchandiseList.ser"))) {
@@ -293,13 +208,13 @@ public class Store implements Serializable {
         } catch (FileNotFoundException e) {
             // File not found, create a new merchandise list
             merchandiseList = new ArrayList<Merchandise>();
-            saveMerchandiseList(); // Optionally save the new empty list to the file
+            saveMerchandiseList();
         } catch (EOFException e) {
-            e.printStackTrace();
+            //e.printStackTrace();
         }
         catch (IOException | ClassNotFoundException e) {
             // Handle other exceptions (e.g., IOException, ClassNotFoundException)
-            e.printStackTrace();
+            //e.printStackTrace();
         }
     }
 
@@ -315,27 +230,6 @@ public class Store implements Serializable {
             // Handle other exceptions (e.g., IOException, ClassNotFoundException)
             e.printStackTrace();
         }
-    }
-    
-    
-    public void sold(int quantity, Merchandise merchandise){
-        for (Merchandise m : this.merchandiseList) {
-            if (m.getName().equals(merchandise.getName())){
-                m.reduceStock(quantity);
-                m.setQtySold(quantity);
-            };
-        }
-
-        saveMerchandiseList();
-        System.out.println("Stroe");
-        System.out.printf("%-20s%-20s%-20s%-20s\n", "Merchandise", "Stock Level", "Unit Price", "Unit Cost");
-        
-        // Print each merchandise item
-        for (Merchandise m : merchandiseList) {
-            System.out.printf("%-20s%-20d%-20.2f%-20.2f\n",
-                    m.getName(), m.getStockLevel(), m.getUnitPrice(), m.getUnitCost());
-        }
-
     }
 
     public void saveTransactionList() {
@@ -362,47 +256,101 @@ public class Store implements Serializable {
         } catch (FileNotFoundException e) {
             // File not found, create a new user list
             users = new ArrayList<>();
-            users.add(new BusinessOwner("Angel", "123", "123", this, null));
+            users.add(new BusinessOwner("Angel", "123", "123", LocalDate.now(), this));
             saveUserList(); // Optionally save the new empty list to the file
         } catch (IOException | ClassNotFoundException e) {
             // Handle other exceptions (e.g., IOException, ClassNotFoundException)
             e.printStackTrace();
         }
     }
-    
 
-    // Search transactions by merchandise name
-    public List<Transaction> searchTransactionsByMerchandise(String merchandiseName) {
-        List<Transaction> result = new ArrayList<>();
-        for (Transaction transaction : transactions) {
-            if (transaction.getMerchandise().getName().equals(merchandiseName)) {
-                result.add(transaction);
+
+    public void recordSales(int quantity, Merchandise merchandise) {
+        LocalDateTime time = LocalDateTime.now();
+        Transaction transaction = new Transaction(time, quantity, merchandise);
+
+        for (Merchandise m : this.merchandiseList) {
+            if (m.getName().equals(merchandise.getName())){
+                m.setStockLevel(m.getStockLevel()-quantity);
+                m.setQtySold(quantity);
             }
         }
-        return result;
+        saveMerchandiseList();
+        this.updateTransactions(transaction);
+        this.saveTransactionList();
     }
 
-    // Search transactions by time
-    public List<Transaction> searchTransactionsByTime(LocalTime searchTime) {
-        List<Transaction> result = new ArrayList<>();
-        for (Transaction transaction : transactions) {
-            if (transaction.getTime().equals(searchTime)) {
-                result.add(transaction);
-            }
-        }
-        return result;
+
+    public void editUser(User u, String name, double salary, String type){
+        u.setName(name);
+        u.setSalary(salary);
+        u.setType(type);
+        this.saveUserList();
     }
 
-    // Search transactions by date
-    public List<Transaction> searchTransactionsByDate(LocalDate searchDate) {
-        List<Transaction> result = new ArrayList<>();
-        for (Transaction transaction : transactions) {
-            if (transaction.getDate().equals(searchDate)) {
-                result.add(transaction);
+    public User findUser(String staffCode){
+        for (User user : this.getUserList()) {
+            if (user.getStaffCode().equals(staffCode)) {
+                return user; // User found
             }
         }
-        return result;
+        return null; // User not found
     }
+
+    public boolean checkStaffCodeUnique(String staffCode) {
+        for (User user : this.getUserList()) {
+            if (user.getStaffCode().equals(staffCode)) {
+                return false;
+            }
+        }
+        return true; // No matching staff code found
+    }
+
+    public String generateStaffCode(String jobType) {
+        StringBuilder code = new StringBuilder();
+        Random random = new Random();
+
+        if ("InventoryManager".equals(jobType)) {
+            code.append("2");
+        } else if ("BusinessOwner".equals(jobType)) {
+            code.append("1");
+        } else if ("SalesStaff".equals(jobType)) {
+            code.append("3");
+        }
+        do {
+            while (code.length() < 3) {
+                int nextChar = random.nextInt(26); // 26 letters
+                // note the GUI added user's staff code will have 2 characters followed by 1 digit
+                // the staff code of users added directly in the code will be made of 3 digits
+                if (nextChar < 26) {
+                    code.append((char) ('A' + nextChar));
+                }
+            }
+        } while(!checkStaffCodeUnique(code.toString()));
+
+        return code.toString();
+    }
+
+    public double calculateSalaryForJobType(String jobType) {
+        if (jobType.equals("SalesStaff")) {
+            return 1000.0;
+        } else if (jobType.equals("InventoryManager")) {
+            return 5000.0;
+        }
+        return 10000.0;
+    }
+
+
+    // Helper method to convert Date to LocalDate for transactions (used by transactionViewer)
+    public LocalDate convertToLocalDateViaInstant(Date dateToConvert) {
+        return dateToConvert.toInstant()
+                .atZone(ZoneId.systemDefault())
+                .toLocalDate();
+    }
+
+
+
+
 
 
 }

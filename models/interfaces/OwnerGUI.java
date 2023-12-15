@@ -8,30 +8,27 @@ import java.awt.*;
 import java.awt.event.*;
 import java.time.LocalDate;
 import java.util.List;
-import java.util.*;
+
 
 public class OwnerGUI {
     private BusinessOwner businessOwner;
-    //private DefaultTableModel model; // Declare model here
-    //private JTable table; //Declare table
+    private transactionViewer tv;
 
 
     public OwnerGUI(BusinessOwner businessOwner) {
         this.businessOwner = businessOwner;
+        this.tv = new transactionViewer(businessOwner.getStoreAccess());
         createAndShowGUI();
     }
 
 
     private void createAndShowGUI() {
-        // Create and set up the window
         JFrame frame = new JFrame("Business Owner Dashboard");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setSize(430, 280);
 
-        // Set layout manager for the frame
         frame.setLayout(new BorderLayout(10, 10));
 
-        // Greeting label
         JLabel greetingLabel = new JLabel("Hi, " + businessOwner.getName());
         greetingLabel.setFont(new Font("Arial", Font.BOLD, 20));
         greetingLabel.setHorizontalAlignment(JLabel.LEFT);
@@ -42,28 +39,22 @@ public class OwnerGUI {
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.gridwidth = GridBagConstraints.REMAINDER;
         gbc.fill = GridBagConstraints.HORIZONTAL;
-        gbc.insets = new Insets(5, 5, 5, 5); // Padding around buttons
+        gbc.insets = new Insets(5, 5, 5, 5); // to pad around buttons
 
-        // Creating buttons
         JButton viewMerchButton = new JButton("View Merchandise");
         JButton viewPersonnelButton = new JButton("View Personnel");
-        JButton exitButton = new JButton("Exit"); // Exit button
+        JButton viewSalesButton = new JButton("View Transactions History");
+        JButton exitButton = new JButton("Exit");
 
-        // Adding buttons to the panel
         buttonPanel.add(viewMerchButton, gbc);
         buttonPanel.add(viewPersonnelButton, gbc);
-        buttonPanel.add(exitButton, gbc); // Add the exit button
+        buttonPanel.add(viewSalesButton,gbc);
+        buttonPanel.add(exitButton, gbc);
 
-        // Adding components to the frame
         frame.add(greetingLabel, BorderLayout.NORTH);
         frame.add(buttonPanel, BorderLayout.CENTER);
 
-//        // Optional: status bar or additional information at the bottom
-//        JLabel statusLabel = new JLabel("Ready", JLabel.CENTER);
-//        frame.add(statusLabel, BorderLayout.SOUTH);
 
-
-        // Center the frame on the screen and make it visible
         viewMerchButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -78,12 +69,18 @@ public class OwnerGUI {
             }
         });
 
-        // Action listener for the exit button
+        viewSalesButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                tv.display();
+            }
+        });
+
         exitButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                frame.dispose(); // Close the current window
-                new LoginInterface(businessOwner.getStore());
+                frame.dispose();
+                new LoginInterface(businessOwner.getStoreAccess());
             }
         });
 
@@ -91,13 +88,10 @@ public class OwnerGUI {
         frame.setVisible(true);
     }
     private void displayMerchandise() {
-        // Create a new frame to display merchandise
         JFrame merchandiseFrame = new JFrame("Merchandise List");
         merchandiseFrame.setSize(500, 300);
 
-        // Table to display merchandise
         String[] columns = {"Name", "Unit Cost", "Unit Price", "Stock Level", "Qty Sold"};
-        //model = new DefaultTableModel(columns, 0);
         DefaultTableModel model = new DefaultTableModel(columns, 0) {
             @Override
             public boolean isCellEditable(int row, int column) {
@@ -108,18 +102,11 @@ public class OwnerGUI {
         JTable table = new JTable(model);
         refreshMerchandiseTable(model);
 
-        //Load merchandise data into the table
-//         for (Merchandise m : businessOwner.getStore().getMerchandiseList()) {
-//             model.addRow(new Object[]{m.getName(), m.getUnitCost(), m.getUnitPrice(), m.getStockLevel()});
-//         }
-
-        // Buttons for add, delete, search
         JButton addMerchButton = new JButton("Add New");
         JButton deleteMerchButton = new JButton("Delete");
         JButton searchMerchButton = new JButton("Search");
         JButton editMerchandiseButton = new JButton("Edit");
 
-        // Add action listeners to these buttons
         addMerchButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -132,13 +119,8 @@ public class OwnerGUI {
             public void actionPerformed(ActionEvent e) {
                 int selectedRow = table.getSelectedRow();
                 if (selectedRow >= 0) {
-                    // Assuming the first column contains the name of the merchandise
                     String merchandiseName = model.getValueAt(selectedRow, 0).toString();
-
-                    // Remove merchandise from the store
                     businessOwner.deleteMerchandise(merchandiseName);
-
-                    // Refresh the merchandise table
                     refreshMerchandiseTable(model);
                 } else {
                     JOptionPane.showMessageDialog(merchandiseFrame, "Please select a merchandise to delete.");
@@ -165,26 +147,21 @@ public class OwnerGUI {
             }
         });
 
-
-        // Layout for buttons
         JPanel merchButtonPanel = new JPanel();
         merchButtonPanel.add(addMerchButton);
         merchButtonPanel.add(deleteMerchButton);
         merchButtonPanel.add(searchMerchButton);
         merchButtonPanel.add(editMerchandiseButton);
 
-        // Add components to the frame
         merchandiseFrame.add(new JScrollPane(table), BorderLayout.CENTER);
         merchandiseFrame.add(merchButtonPanel, BorderLayout.SOUTH);
 
-        // Display the frame
         merchandiseFrame.setLocationRelativeTo(null);
         merchandiseFrame.setVisible(true);
     }
 
     private void refreshMerchandiseTable(DefaultTableModel model) {
         model.setRowCount(0); // Clear existing data
-        // Load merchandise data
         List<Merchandise> merchandiseList = businessOwner.getMerchandiseList();
         
         for (Merchandise m : merchandiseList) {
@@ -194,41 +171,31 @@ public class OwnerGUI {
 
     private void displayEditMerchandiseForm(DefaultTableModel merchandiseModel, JTable merchandiseTable, int selectedRow) {
         JFrame editFrame = new JFrame("Edit Merchandise");
-        editFrame.setLayout(new GridLayout(0, 2));
-        editFrame.setSize(400, 300);
+        editFrame.setLayout(new GridLayout(3, 2));
+        editFrame.setSize(300, 150);
 
-        // Create and populate fields for merchandise attributes
         JTextField nameField = new JTextField(merchandiseModel.getValueAt(selectedRow, 0).toString());
         JTextField unitPriceField = new JTextField(merchandiseModel.getValueAt(selectedRow, 2).toString());
 
-
-        // Add fields to the frame
         editFrame.add(new JLabel("Name:")); editFrame.add(nameField);
         editFrame.add(new JLabel("Unit Price:")); editFrame.add(unitPriceField);
-        Merchandise selectedMerchandise = businessOwner.getStore().findMerchandise(merchandiseModel.getValueAt(selectedRow, 0).toString());
+        Merchandise selectedMerchandise = businessOwner.findMerchandise(merchandiseModel.getValueAt(selectedRow, 0).toString());
 
-
-        // Save button
         JButton saveButton = new JButton("Save");
         editFrame.add(saveButton);
 
         JButton resetButton = new JButton("Reset");
         editFrame.add(resetButton);
 
-        // Save button action listener
         saveButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                // Validate and save changes
-                // Update the merchandiseModel and possibly the underlying data
+                // Update the merchandiseModel and the serialized data
                 merchandiseModel.setValueAt(nameField.getText(), selectedRow, 0);
                 merchandiseModel.setValueAt(Double.parseDouble(unitPriceField.getText()), selectedRow, 2);
 
                 businessOwner.editMerchandise(selectedMerchandise, nameField.getText(), Double.parseDouble(unitPriceField.getText()));
-                // Close the edit frame
                 editFrame.dispose();
-
-                // Optionally, update the underlying data structure and persist changes
             }
         });
 
@@ -236,7 +203,6 @@ public class OwnerGUI {
         String originalName = nameField.getText();
         String originalUnitPrice = unitPriceField.getText();
 
-        // Add action listener to the reset button
         resetButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -247,20 +213,16 @@ public class OwnerGUI {
             }
         });
 
-
         editFrame.setLocationRelativeTo(null);
         editFrame.setVisible(true);
     }
 
 
     private void addMerchandise(DefaultTableModel model) {
-        // Create a new frame for adding new merchandise
         JFrame addFrame = new JFrame("Add New Merchandise");
         addFrame.setSize(250, 150);
-        // Panel for form fields
-        JPanel formPanel = new JPanel(new GridLayout(3, 2, 10, 5)); // 5 rows, 2 columns
+        JPanel formPanel = new JPanel(new GridLayout(3, 2, 10, 5));
 
-        // Form fields
         formPanel.add(new JLabel("Name:"));
         JTextField nameField = new JTextField();
         formPanel.add(nameField);
@@ -272,15 +234,13 @@ public class OwnerGUI {
         formPanel.add(new JLabel("Unit Price:"));
         JTextField unitPriceField = new JTextField();
         formPanel.add(unitPriceField);
-        JPanel buttonPanel = new JPanel(); // Create a panel for buttons
+        JPanel buttonPanel = new JPanel();
         JButton submitButton = new JButton("Add");
         JButton resetButton = new JButton("Reset");
-        buttonPanel.add(submitButton); // Add the submit button to the panel
-        buttonPanel.add(resetButton); // Add the reset button to the panel
+        buttonPanel.add(submitButton);
+        buttonPanel.add(resetButton);
 
 
-
-        // Submit button
 
         submitButton.addActionListener(new ActionListener() {
             @Override
@@ -290,23 +250,16 @@ public class OwnerGUI {
                 double unitCost = Double.parseDouble(unitCostField.getText());
                 int unitPrice = Integer.parseInt(unitPriceField.getText());
 
-                // Add new merchandise to the store
                 businessOwner.addNewMerchandise(name, unitCost, unitPrice, 0);
-
                 refreshMerchandiseTable(model);
-
-                // Close the add frame
                 addFrame.dispose();
 
-                // Optionally, refresh the merchandise display
-                // displayMerchandise();
             }
         });
 
         resetButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                // Parse input fields and add new merchandise
                 nameField.setText("");
                 unitCostField.setText("");
                 unitPriceField.setText("");
@@ -314,14 +267,10 @@ public class OwnerGUI {
             }
         });
 
-
-        // Add components to the frame
         addFrame.setLayout(new BorderLayout());
         addFrame.add(formPanel, BorderLayout.CENTER);
-        //addFrame.add(submitButton);
         addFrame.add(buttonPanel,BorderLayout.SOUTH);
 
-        // Display the frame
         addFrame.setLocationRelativeTo(null);
         addFrame.setVisible(true);
     }
@@ -357,8 +306,6 @@ public class OwnerGUI {
 
     private boolean searchAndHighlightMerchandise(String searchText, JTable table) {
         boolean foundMatch = false;
-
-        // Clear existing selection
         table.clearSelection();
 
         for (int i = 0; i < table.getRowCount(); i++) {
@@ -379,13 +326,10 @@ public class OwnerGUI {
     }
 
     private void displayPersonnel() {
-        // Create a new frame
         JFrame personnelFrame = new JFrame("Personnel List");
         personnelFrame.setSize(500, 300);
-
-        // Table model and table for personnel data
         String[] columns = {"StaffCode","Name", "Salary", "Date of Enrolment", "Job Type"};
-        //DefaultTableModel personnelModel = new DefaultTableModel(columns, 0);
+
         DefaultTableModel personnelModel = new DefaultTableModel(columns, 0) {
             @Override
             public boolean isCellEditable(int row, int column) {
@@ -394,8 +338,6 @@ public class OwnerGUI {
             }
         };
         JTable personnelTable = new JTable(personnelModel);
-
-        // Populate the table with personnel data
         refreshPersonnelTable(personnelModel);
 
         // ComboBox for filtering
@@ -409,7 +351,6 @@ public class OwnerGUI {
             }
         });
 
-        // Layout for ComboBox and table
         JPanel filterPanel = new JPanel();
         filterPanel.add(new JLabel("Filter by Job Type:"));
         filterPanel.add(filterComboBox);
@@ -417,28 +358,21 @@ public class OwnerGUI {
         personnelFrame.add(filterPanel, BorderLayout.NORTH);
         personnelFrame.add(new JScrollPane(personnelTable), BorderLayout.CENTER);
 
-        // Display the frame
         personnelFrame.setLocationRelativeTo(null);
         personnelFrame.setVisible(true);
 
-        // Create "Add" button
         JButton addPersonnelButton = new JButton("Add");
-        // Create "Delete" button
         JButton deletePersonnelButton = new JButton("Delete");
         JButton editPersonnelButton = new JButton("Edit");
         JButton searchButton = new JButton("Search");
 
 
-
-        // Add the button to the panel or frame
         JPanel personnelButtonPanel = new JPanel();
         personnelButtonPanel.add(addPersonnelButton);
         personnelButtonPanel.add(deletePersonnelButton);
         personnelButtonPanel.add(editPersonnelButton);
         personnelButtonPanel.add(searchButton);
 
-
-        // Add the panel to the frame
         personnelFrame.add(personnelButtonPanel, BorderLayout.SOUTH);
 
         addPersonnelButton.addActionListener(new ActionListener() {
@@ -453,9 +387,7 @@ public class OwnerGUI {
             public void actionPerformed(ActionEvent e) {
                 int selectedRow = personnelTable.getSelectedRow();
                 if (selectedRow >= 0) {
-                    // Assuming staff code is in the first column
                     String staffCode = personnelModel.getValueAt(selectedRow, 0).toString();
-
                     // Confirm before deletion
                     int confirm = JOptionPane.showConfirmDialog(
                             personnelFrame,
@@ -465,13 +397,9 @@ public class OwnerGUI {
                     );
 
                     if (confirm == JOptionPane.YES_OPTION) {
-                        // Call the deleteUser method
-                        String resultMessage = businessOwner.getStore().deleteUser(staffCode);
-
-                        // Show result message
+                        String resultMessage = businessOwner.deleteUser(staffCode);
                         JOptionPane.showMessageDialog(personnelFrame, resultMessage);
-
-                        // Remove the personnel from the table model if deletion was successful
+                        // Remove the personnel if deletion was successful
                         if (resultMessage.contains("successfully")) {
                             personnelModel.removeRow(selectedRow);
                         }
@@ -506,9 +434,7 @@ public class OwnerGUI {
     }
 
     private void refreshPersonnelTable(DefaultTableModel model) {
-
-        model.setRowCount(0); // Clear existing data
-        // Assuming getPersonnelList() returns a list of Personnel objects
+        model.setRowCount(0);
         List<User> personnelList = businessOwner.getUserList();
         for (User p : personnelList) {
             //System.out.println("Adding to table: " + p.getSalary());
@@ -517,7 +443,7 @@ public class OwnerGUI {
     }
 
     private void filterPersonnelTable(DefaultTableModel model, String jobType) {
-        refreshPersonnelTable(model); // Refresh to show all personnel first
+        refreshPersonnelTable(model);
         if (!jobType.equals("All")) {
             for (int i = model.getRowCount() - 1; i >= 0; i--) {
                 if (!model.getValueAt(i, 4).equals(jobType)) {
@@ -531,11 +457,8 @@ public class OwnerGUI {
         JFrame addPersonnelFrame = new JFrame("Add New Personnel");
         addPersonnelFrame.setSize(300, 200);
 
-        // Form fields
-        JPanel formPanel = new JPanel(new GridLayout(0, 2)); // 0 rows, 2 columns for labels and fields
+        JPanel formPanel = new JPanel(new GridLayout(0, 2));
 
-
-        // Name field
         formPanel.add(new JLabel("Name:"));
         JTextField nameField = new JTextField();
         formPanel.add(nameField);
@@ -547,32 +470,27 @@ public class OwnerGUI {
         jobTypeComboBox.setSelectedIndex(0); // Set blank item as selected
         formPanel.add(jobTypeComboBox);
 
-        // Salary field (non-editable, auto-filled)
         formPanel.add(new JLabel("Salary:"));
         JTextField salaryField = new JTextField();
         salaryField.setEditable(true);
         formPanel.add(salaryField);
 
-        // Populate salary based on job type selection
+        // Fill salary based on job type selected
         jobTypeComboBox.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 String selectedJobType = (String) jobTypeComboBox.getSelectedItem();
-                //double salary = calculateSalaryForJobType(selectedJobType);
-                //String selectedJobType = (String) jobTypeComboBox.getSelectedItem();
                 if (!selectedJobType.isEmpty()) {
-                    double recommendedSalary = calculateSalaryForJobType(selectedJobType);
-                    salaryField.setText(String.format("%.2f", recommendedSalary)); // Set as a formatted string
+                    double recommendedSalary = businessOwner.calculateSalaryForJobType(selectedJobType);
+                    salaryField.setText(String.format("%.2f", recommendedSalary));
                 } else {
                     salaryField.setText("");
                 }
-                //salaryField.setText(String.valueOf(salary));
             }
         });
 
-        // Submit button
+
         JButton submitButton = new JButton("Add Personnel");
-        // Add ActionListener to submitButton here
         submitButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -586,89 +504,39 @@ public class OwnerGUI {
                     JOptionPane.showMessageDialog(addPersonnelFrame, "Invalid salary. Please enter a valid number.");
                     return;
                 }
-                //System.out.println("Salary: " + salary); // Debugging line
+                //System.out.println("Salary: " + salary);
                 LocalDate dateOfEnrolment = LocalDate.now();
 
                 // Generate staff code and password
-                String staffCode = generateStaffCode(jobType);
+                String staffCode = businessOwner.generateStaffCode(jobType);
                 String password = staffCode; // Password is same as staff code
 
-                // Create new Personnel object (adjust constructor as needed)
-                User newPersonnel = new User(name, staffCode, password, businessOwner.getStore(), jobType, dateOfEnrolment);
+                User newPersonnel = new User(name, staffCode, password, jobType, dateOfEnrolment);
                 newPersonnel.setSalary(salary);
-                //System.out.println("Before adding new personnel:");
-//                for (User p : businessOwner.getStore().getUserList()) {
-//                    System.out.println("Existing Personnel - Name: " + p.getName() + ", Salary: " + p.getSalary());
-//                }
 
-
-                // Add to personnel list, save, refresh table, etc.
-                businessOwner.getStore().addUser(newPersonnel);
+                businessOwner.addUser(newPersonnel);
                 refreshPersonnelTable(model);
-                // ...
 
-                // Display staff code and password
                 JOptionPane.showMessageDialog(addPersonnelFrame,
                         "Staff Code: " + staffCode + "\nPassword: " + password +
                                 "\n\nPlease share this information with the new personnel.",
                         "Personnel Details", JOptionPane.INFORMATION_MESSAGE);
 
-                // Close the addPersonnelFrame
                 addPersonnelFrame.dispose();
             }
         });
 
-        // Add components to the frame
         addPersonnelFrame.add(formPanel, BorderLayout.CENTER);
         addPersonnelFrame.add(submitButton, BorderLayout.SOUTH);
 
-        // Display the frame
         addPersonnelFrame.setLocationRelativeTo(null);
         addPersonnelFrame.setVisible(true);
     }
 
-    private double calculateSalaryForJobType(String jobType) {
-        if (jobType.equals("SalesStaff")) {
-            return 1000.0;
-        } else if (jobType.equals("InventoryManager")) {
-            return 5000.0;
-        }
-        return 10000.0;
-    }
 
-    private String generateStaffCode(String jobType) {
-        StringBuilder code = new StringBuilder();
-        Random random = new Random();
 
-        if ("InventoryManager".equals(jobType)) {
-            code.append("2");
-        } else if ("BusinessOwner".equals(jobType)) {
-            code.append("1");
-        } else if ("SalesStaff".equals(jobType)) {
-            code.append("3");
-        }
-        do {
-            while (code.length() < 3) {
-                int nextChar = random.nextInt(26); // 26 letters
-                // note the GUI added user's staff code will have 2 characters followed by 1 digit
-                // the staff code of users added directly in the code will be made of 3 digits
-                if (nextChar < 26) {
-                    code.append((char) ('A' + nextChar));
-                }
-            }
-        } while(!isStaffCodeUnique(code.toString()));
 
-        return code.toString();
-    }
 
-    private boolean isStaffCodeUnique(String staffCode) {
-        for (User user : businessOwner.getUserList()) {
-            if (user.getStaffCode().equals(staffCode)) {
-                return false;
-            }
-        }
-        return true; // No matching staff code found
-    }
 
     private void displayEditPersonnelForm(DefaultTableModel personnelModel, int selectedRow) {
         JFrame editFrame = new JFrame("Edit Personnel");
@@ -788,9 +656,9 @@ public class OwnerGUI {
         table.clearSelection();
 
         for (int i = 0; i < model.getRowCount(); i++) {
-            boolean staffCodeMatch = staffCode.isEmpty() || containsIgnoreCase(model.getValueAt(i, 0).toString(), staffCode);
-            boolean nameMatch = name.isEmpty() || containsIgnoreCase(model.getValueAt(i, 1).toString(), name);
-            boolean jobTypeMatch = jobType.isEmpty() || containsIgnoreCase(model.getValueAt(i, 4).toString(), jobType);
+            boolean staffCodeMatch = staffCode.isEmpty() || model.getValueAt(i, 0).toString().toLowerCase().contains(staffCode.toLowerCase());
+            boolean nameMatch = name.isEmpty() || model.getValueAt(i, 1).toString().toLowerCase().contains(name.toLowerCase());
+            boolean jobTypeMatch = jobType.isEmpty() || model.getValueAt(i, 4).toString().toLowerCase().contains(jobType.toLowerCase());
 
             if (staffCodeMatch && nameMatch && jobTypeMatch) {
                 table.addRowSelectionInterval(i, i);
@@ -804,9 +672,7 @@ public class OwnerGUI {
     }
 
 
-    private boolean containsIgnoreCase(String src, String what) {
-        return src.toLowerCase().contains(what.toLowerCase());
-    }
+
 
 
 }

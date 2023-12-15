@@ -3,101 +3,63 @@ import java.io.*;
 import models.*;
 import java.util.*;
 import java.time.*;
-public class BusinessOwner extends User implements Serializable {
-    Store store;
-    public BusinessOwner(String name, String staffCode, String passWord, Store store, LocalDate date) {
-        // Automatically setting the type to "BusinessOwner"
-        super(name, staffCode, passWord,store, "BusinessOwner", date);
+public class BusinessOwner extends User implements Serializable, Business_Owner {
+    private Business_Owner storeAccess;
+
+    public BusinessOwner(String name, String staffCode, String passWord, LocalDate date, Business_Owner storeAccess) {
+        super(name, staffCode, passWord, "BusinessOwner", date);
         this.setSalary(10000);
-        this.store = store;
+        this.storeAccess = storeAccess;
     }
 
     public List<Merchandise> getMerchandiseList(){
-        return this.store.getMerchandiseList();
+        return storeAccess.getMerchandiseList();
     }
-
-    public void addNewMerchandise(String name, Double unitCost, int unitPrice, int stockLevel){
-
-        this.store.addNewMerchandise(name, unitCost, unitPrice, stockLevel);
-
-    }
-
     public List<User> getUserList(){
-        return this.store.getUserList();
+        return storeAccess.getUserList();
     }
 
+    public void addNewMerchandise(String name, double unitCost, double unitPrice, int stockLevel){
+        storeAccess.addNewMerchandise(name, unitCost, unitPrice, stockLevel);
+    }
     public void deleteMerchandise(String merchandiseName){
-        this.store.deleteMerchandise(merchandiseName);
+        storeAccess.deleteMerchandise(merchandiseName);
     }
 
     public void editMerchandise(Merchandise m, String name, double unitPrice){
-        this.store.editMerchandise(m, name, unitPrice);
+        storeAccess.editMerchandise(m, name, unitPrice);
     }
-
-//    public void editUser(User u, String name, double amt, String type){
-//        this.store.editUser(u,name,amt,type);
-//    }
-
+    public Merchandise findMerchandise(String name) {
+        return storeAccess.findMerchandise(name);
+    }
     public void editUser(User u, String name, double salary, String type){
-        u.setName(name);
-        u.setSalary(salary);
-        u.setType(type);
-        this.store.saveUserList();
+        storeAccess.editUser(u, name, salary, type);
+    }
+    public User findUser(String staffCode) {
+        return storeAccess.findUser(staffCode);
+    }
+    public void addUser(User user){
+        storeAccess.addUser(user);
+    }
+    public String deleteUser(String staffCode) {
+        return storeAccess.deleteUser(staffCode);
     }
 
-    public User findUser(String staffCode){
-        for (User user : this.getStore().getUserList()) {
-            if (user.getStaffCode().equals(staffCode)) {
-                return user; // User found
-            }
-        }
-        return null; // User not found
+    @Override
+    public List<Transaction> getAllTransactions() {
+        return storeAccess.getAllTransactions();
     }
-
-
-
-    public void addSalesStaff(String name, String staffCode, String passWord, LocalDate date)
-    {   //if none of the user share the same staffCode then allow add user using this staffCode
-        if(!store.findUserByStaffCode(staffCode))
-        {
-            SalesStaff newSalesStaff = new SalesStaff(name, staffCode, store, passWord, date);
-            store.addUser(newSalesStaff);
-        }
-
+    public boolean checkStaffCodeUnique(String staffCode){
+        return storeAccess.checkStaffCodeUnique(staffCode);
     }
-
-    public void addInventoryManager(String name, String staffCode, String passWord, LocalDate date)
-    {   //if none of the user share the same staffCode then allow add user using this staffCode
-        if(!store.findUserByStaffCode(staffCode))
-        {
-            SalesStaff newInventoryManager = new SalesStaff(name, staffCode, store, passWord, date);
-            store.addUser(newInventoryManager);
-        }
+    public String generateStaffCode(String jobType) {
+        return storeAccess.generateStaffCode(jobType);
     }
-
-    public void deleteStaff(String staffCode)
-    {
-        store.deleteUser(staffCode);
+    public double calculateSalaryForJobType(String jobType){
+        return storeAccess.calculateSalaryForJobType(jobType);
     }
-
-    //discount is percentage in double
-    public void setDiscount(String name, double discount) {
-        //this check if Merchandise exist in store, if yes then set new discount price
-        if(store.findMerchandise(name) != null)
-        {
-            store.setDiscount(name, discount);
-        }
-    }
-
-    public void setPrice(String name, double price) {
-        if(store.findMerchandise(name) != null)
-        {
-            store.setPrice(name, price);
-        }
-    }
-
-    public Store getStore(){
-        return this.store;
+    public Store getStoreAccess(){
+        return (Store) this.storeAccess;
     }
 
 }

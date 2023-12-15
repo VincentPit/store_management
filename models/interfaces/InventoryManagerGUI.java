@@ -5,22 +5,18 @@ import models.*;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
-import java.awt.event.*;
-import java.time.LocalDate;
-import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class InventoryManagerGUI {
     private InventoryManager inventoryManager;
-    private DefaultTableModel model; // Model for inventory
-    private DefaultTableModel salesModel; // Model for sales history
-    private JTable table; // Table for inventory
-    private JTable salesTable; // Table for sales history
+    private transactionViewer tv;
+
 
     public InventoryManagerGUI(InventoryManager inventoryManager) {
         this.inventoryManager = inventoryManager;
+        this.tv = new transactionViewer(inventoryManager.getStoreAccess());
         createAndShowInitialGUI();
     }
 
@@ -47,10 +43,15 @@ public class InventoryManagerGUI {
         JButton exitButton = new JButton("Exit");
 
         inventoryButton.addActionListener(e -> openInventoryManagement());
-        salesHistoryButton.addActionListener(e -> openSalesHistory());
+        salesHistoryButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                tv.display();
+            }
+        });
         exitButton.addActionListener(e -> {
             frame.dispose();
-            new LoginInterface(inventoryManager.getStore()); // Replace with actual call to LoginInterface
+            new LoginInterface(inventoryManager.getStoreAccess()); // Replace with actual call to LoginInterface
         });
 
         buttonPanel.add(inventoryButton, gbc);
@@ -67,9 +68,6 @@ public class InventoryManagerGUI {
         createAndShowInventoryGUI();
     }
 
-    private void openSalesHistory() {
-        createAndShowSalesHistoryGUI();
-    }
 
     private void createAndShowInventoryGUI() {
         JFrame inventoryFrame = new JFrame("Inventory Management");
@@ -78,21 +76,21 @@ public class InventoryManagerGUI {
         inventoryFrame.setLayout(new BorderLayout(10, 10));
 
         String[] columns = {"Name", "Unit Cost", "Unit Price", "Stock Level", "Qty Sold"};
-        model = new DefaultTableModel(columns, 0) {
+        DefaultTableModel model = new DefaultTableModel(columns, 0) {
             @Override
             public boolean isCellEditable(int row, int column) {
-                // This will make all cells in the table non-editable
+                // make all cells in the table non-editable
                 return false;
             }
         };
-        table = new JTable(model);
-        refreshMerchandiseTable();
+        JTable table = new JTable(model);
+        refreshMerchandiseTable(model);
 
         JButton addMerchButton = new JButton("Restock");
         JButton searchMerchButton = new JButton("Search");
 
-        addMerchButton.addActionListener(e -> restock());
-        searchMerchButton.addActionListener(e -> showSearchDialog(inventoryFrame));
+        addMerchButton.addActionListener(e -> restock(model, table));
+        searchMerchButton.addActionListener(e -> showSearchDialog(inventoryFrame, table));
 
         JPanel merchButtonPanel = new JPanel();
         merchButtonPanel.add(addMerchButton);
@@ -105,46 +103,16 @@ public class InventoryManagerGUI {
         inventoryFrame.setVisible(true);
     }
 
-    private void createAndShowSalesHistoryGUI() {
-        JFrame salesHistoryFrame = new JFrame("Sales History");
-        salesHistoryFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        salesHistoryFrame.setSize(600, 400);
-        salesHistoryFrame.setLayout(new BorderLayout(10, 10));
 
-        String[] salesColumns = {"Date", "Time", "Merchandise", "Quantity", "Amount"};
-        salesModel = new DefaultTableModel(salesColumns, 0);
-        salesTable = new JTable(salesModel);
-        refreshSalesHistoryTable();
-
-        JPanel buttonPanel = new JPanel();
-        JButton searchByNameButton = new JButton("Search by Name");
-        JButton searchByDateButton = new JButton("Search by Date");
-        JButton searchByTimeButton = new JButton("Search by Time");
-
-        searchByNameButton.addActionListener(e -> searchSalesHistoryByMerchandise(salesHistoryFrame));
-        searchByDateButton.addActionListener(e -> searchSalesHistoryByDate(salesHistoryFrame));
-        searchByTimeButton.addActionListener(e -> searchSalesHistoryByTime(salesHistoryFrame));
-
-        buttonPanel.add(searchByNameButton);
-        buttonPanel.add(searchByDateButton);
-        buttonPanel.add(searchByTimeButton);
-
-        salesHistoryFrame.add(new JScrollPane(salesTable), BorderLayout.CENTER);
-        salesHistoryFrame.add(buttonPanel, BorderLayout.SOUTH);
-
-        salesHistoryFrame.setLocationRelativeTo(null);
-        salesHistoryFrame.setVisible(true);
-    }
-
-    private void refreshMerchandiseTable() {
+    private void refreshMerchandiseTable(DefaultTableModel model) {
         model.setRowCount(0);
-        List<Merchandise> merchandiseList = inventoryManager.getStore().getMerchandiseList();
+        List<Merchandise> merchandiseList = inventoryManager.getMerchandiseList();
         for (Merchandise m : merchandiseList) {
             model.addRow(new Object[]{m.getName(), m.getUnitCost(), m.getUnitPrice(), m.getStockLevel(), m.getQtySold()});
         }
     }
 
-    private void restock() {
+    private void restock(DefaultTableModel model, JTable table) {
         int selectedRow = table.getSelectedRow();
         if (selectedRow == -1) {
             JOptionPane.showMessageDialog(null, "Please select a merchandise item to restock.");
@@ -160,14 +128,14 @@ public class InventoryManagerGUI {
                     return;
                 }
                 inventoryManager.restock(merchandiseName, additionalStock);
-                refreshMerchandiseTable();
+                refreshMerchandiseTable(model);
             } catch (NumberFormatException e) {
                 JOptionPane.showMessageDialog(null, "Invalid input. Please enter a valid number.");
             }
         }
     }
 
-    private void showSearchDialog(JFrame frame) {
+    private void showSearchDialog(JFrame frame, JTable table) {
         JDialog searchDialog = new JDialog(frame, "Search Merchandise", true);
         searchDialog.setLayout(new FlowLayout());
         searchDialog.setSize(300, 130);
@@ -181,7 +149,7 @@ public class InventoryManagerGUI {
 
         searchConfirmButton.addActionListener(e -> {
             String searchText = searchTextField.getText();
-            if (!searchAndHighlightMerchandise(searchText)) {
+            if (!searchAndHighlightMerchandise(searchText, table)) {
                 JOptionPane.showMessageDialog(searchDialog, "Merchandise not found.");
             }
             searchDialog.dispose();
@@ -191,7 +159,7 @@ public class InventoryManagerGUI {
         searchDialog.setVisible(true);
     }
 
-    private boolean searchAndHighlightMerchandise(String searchText) {
+    private boolean searchAndHighlightMerchandise(String searchText, JTable table) {
         boolean foundMatch = false;
         table.clearSelection();
         for (int i = 0; i < table.getRowCount(); i++) {
@@ -206,63 +174,7 @@ public class InventoryManagerGUI {
         }
         return foundMatch;
     }
-    private void searchSalesHistoryByMerchandise(JFrame frame) {
-        String inputName = JOptionPane.showInputDialog(frame, "Enter Merchandise Name:");
-        if (inputName != null) {
-            final String merchandiseName = inputName.toLowerCase();
-            List<Transaction> filteredTransactions = inventoryManager.getAllTransactions().stream()
-                    .filter(t -> t.getMerchandise().getName().toLowerCase().contains(merchandiseName))
-                    .collect(Collectors.toList());
-            updateSalesTableModel(filteredTransactions);
-        }
-    }
 
-    private void searchSalesHistoryByDate(JFrame frame) {
-        String inputDate = JOptionPane.showInputDialog(frame, "Enter Date (yyyy-MM-dd):");
-        if (inputDate != null) {
-            final String dateString = inputDate;
-            List<Transaction> filteredTransactions = inventoryManager.getAllTransactions().stream()
-                    .filter(t -> t.getDate().toString().contains(dateString))
-                    .collect(Collectors.toList());
-            updateSalesTableModel(filteredTransactions);
-        }
-    }
-
-    private void searchSalesHistoryByTime(JFrame frame) {
-        String inputTime = JOptionPane.showInputDialog(frame, "Enter Time (HH:mm):");
-        if (inputTime != null) {
-            final String timeString = inputTime;
-            List<Transaction> filteredTransactions = inventoryManager.getAllTransactions().stream()
-                    .filter(t -> t.getTime().toString().contains(timeString))
-                    .collect(Collectors.toList());
-            updateSalesTableModel(filteredTransactions);
-        }
-    }
-
-
-    private void updateSalesTableModel(List<Transaction> transactions) {
-        salesModel.setRowCount(0);
-        DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-        DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm:ss");
-
-        // Check if transactions list is not null
-        if (transactions != null) {
-            for (Transaction transaction : transactions) {
-                salesModel.addRow(new Object[]{
-                        transaction.getDate().format(dateFormatter),
-                        transaction.getTime().format(timeFormatter),
-                        transaction.getMerchandise().getName(),
-                        transaction.getQuantity(),
-                        transaction.getMerchandise().getUnitPrice() * transaction.getQuantity()
-                });
-            }
-        }
-    }
-
-
-    private void refreshSalesHistoryTable() {
-        updateSalesTableModel(inventoryManager.getAllTransactions());
-    }
 
 
 }

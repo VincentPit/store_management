@@ -2,53 +2,27 @@ package models;
 import java.io.*;
 import java.util.*;
 import java.time.*;
-public class InventoryManager extends User implements Serializable{
-    public InventoryManager(String name, String staffCode, String passWord,Store store, LocalDate date) {
-        // Automatically setting the type to "BusinessOwner"
-        super(name, staffCode, passWord, store,"InventoryManager", date);
+public class InventoryManager extends User implements Serializable, Inventory_Manager{
+    private Inventory_Manager storeAccess;
+    public InventoryManager(String name, String staffCode, String passWord, LocalDate date, Inventory_Manager storeAccess) {
+        super(name, staffCode, passWord, "InventoryManager", date);
+        this.storeAccess = storeAccess;
         this.setSalary(5000);
     }
-
-    //buyProduct update stockLevel and unitCost, the new purchase price could be different
-    //if the price is different, it re-calculate average unitCost, and update quanity
-    public void buyProducts(String name, double unitCost, int quantity) {
-        Merchandise tempMerchandise = store.findMerchandise(name);
-        double tempCost = tempMerchandise.getUnitCost();
-        int tempStockLevel =  tempMerchandise.getStockLevel();
-
-        int newStockLevel = tempMerchandise.getStockLevel() + quantity;
-        double newCost = ((unitCost * quantity) + (tempCost * tempStockLevel))/newStockLevel;
-        tempMerchandise.setStockLevel(newStockLevel);
-        tempMerchandise.setUnitCost(newCost);
-
-    }
-
     public void restock(String merchandiseName, int additionalStock){
-        this.store.restock(merchandiseName, additionalStock);
-
+        storeAccess.restock(merchandiseName, additionalStock);
     }
 
     public List<Transaction> getAllTransactions(){
-        return this.store.getAllTransactions();
+        return storeAccess.getAllTransactions();
     }
 
-    public List<Transaction> searchSaleHistoryByDate(LocalDate date) {
-        return this.store.searchTransactionsByDate(date);
-
+    public List<Merchandise> getMerchandiseList(){
+        return storeAccess.getMerchandiseList();
     }
 
-    public List<Transaction> searchSaleHistoryByTime(LocalTime time) {
-        return this.store.searchTransactionsByTime(time);
-
+    public Store getStoreAccess() {
+        return (Store) this.storeAccess;
     }
 
-    public List<Transaction> searchSaleHistoryByMerchandise(String m) {
-        return this.store.searchTransactionsByMerchandise(m);
-
-    }
-
-    //get the list with all Merchandise
-    public void viewAll() {
-        List<Merchandise> tempMerchandiseList = store.getMerchandiseList();
-    }
 }

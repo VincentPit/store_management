@@ -1,6 +1,6 @@
 package models;
 import java.io.*;
-import java.util.*;
+
 public class Merchandise implements Serializable {
     private String name;
     private double unitCost;
@@ -17,9 +17,6 @@ public class Merchandise implements Serializable {
         this.stockLevel = stockLevel;
     }
 
-    public void setPrice(double price){
-        this.unitPrice = price;
-    }
 
     public void setUnitPrice(double unitPrice) {
         this.unitPrice = unitPrice;
@@ -62,15 +59,5 @@ public class Merchandise implements Serializable {
     }
 
 
-    public void increaseStock(int amount){
-        this.stockLevel += amount;
-    }
-
-    public void reduceStock( int amount){
-        System.out.println("Stock level before reduction: " + this.stockLevel);
-        this.stockLevel = this.stockLevel - amount;
-        System.out.println("Stock level after reduction: " + this.stockLevel);
-
-    }
 
 }
