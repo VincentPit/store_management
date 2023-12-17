@@ -140,7 +140,7 @@ public class OwnerGUI {
             public void actionPerformed(ActionEvent e) {
                 int selectedRow = table.getSelectedRow();
                 if (selectedRow >= 0) {
-                    displayEditMerchandiseForm(model, table, selectedRow);
+                    displayEditMerchandiseForm(model, selectedRow);
                 } else {
                     JOptionPane.showMessageDialog(merchandiseFrame, "Please select a merchandise to edit.");
                 }
@@ -169,7 +169,7 @@ public class OwnerGUI {
         }
     }
 
-    private void displayEditMerchandiseForm(DefaultTableModel merchandiseModel, JTable merchandiseTable, int selectedRow) {
+    private void displayEditMerchandiseForm(DefaultTableModel merchandiseModel, int selectedRow) {
         JFrame editFrame = new JFrame("Edit Merchandise");
         editFrame.setLayout(new GridLayout(3, 2));
         editFrame.setSize(300, 150);

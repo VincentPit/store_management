@@ -14,8 +14,6 @@ public class User implements Serializable {
     private LocalDate dateOfEnrolment;
 
 
-    public User(){}
-
     public User(String name, String staffCode, String passWord,String type, LocalDate now) {
         this.name = name;
         this.staffCode = staffCode;

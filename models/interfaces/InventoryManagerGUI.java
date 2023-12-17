@@ -42,7 +42,7 @@ public class InventoryManagerGUI {
         JButton salesHistoryButton = new JButton("View Transaction History");
         JButton exitButton = new JButton("Exit");
 
-        inventoryButton.addActionListener(e -> openInventoryManagement());
+        inventoryButton.addActionListener(e -> createAndShowInventoryGUI());
         salesHistoryButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -62,10 +62,6 @@ public class InventoryManagerGUI {
 
         frame.setLocationRelativeTo(null);
         frame.setVisible(true);
-    }
-
-    private void openInventoryManagement() {
-        createAndShowInventoryGUI();
     }
 
 

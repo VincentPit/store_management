@@ -6,7 +6,7 @@ public class Merchandise implements Serializable {
     private double unitCost;
     private double unitPrice;
     private int stockLevel;
-    private double qtySold;
+    private int qtySold;
 
     
 
@@ -50,11 +50,11 @@ public class Merchandise implements Serializable {
         this.unitCost = cost;
     }
 
-    public double getQtySold() {
+    public int getQtySold() {
         return qtySold;
     }
 
-    public void setQtySold(double qtySold) {
+    public void setQtySold(int qtySold) {
         this.qtySold = qtySold;
     }
 
